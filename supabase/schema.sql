@@ -291,6 +291,7 @@ as $$
 declare
   current_user_id uuid := auth.uid();
   current_user_role text;
+  current_user_metadata_role text;
   spy_items_count integer;
   spy_sources_count integer;
   creative_assets_count integer;
@@ -302,7 +303,8 @@ begin
   end if;
 
   select role into current_user_role from public.users where id = current_user_id;
-  if coalesce(current_user_role, '') <> 'admin' then
+  select raw_user_meta_data->>'role' into current_user_metadata_role from auth.users where id = current_user_id;
+  if coalesce(current_user_role, '') <> 'admin' and coalesce(current_user_metadata_role, '') <> 'admin' then
     raise exception 'Apenas administradores podem vincular dados existentes.';
   end if;
 
