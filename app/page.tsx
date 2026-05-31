@@ -982,7 +982,7 @@ function Spy({
                   <td className="px-5"><Badge tone="blue">{item.status}</Badge></td>
                   <td className="px-5">
                     <div className="flex gap-2">
-                      <button onClick={() => notify("Criativo criado a partir do anúncio")} title="Transformar em criativo" className="rounded-lg bg-amber-500/15 p-2 text-amber-300"><Zap size={14} /></button>
+                      <button onClick={() => item.main_url && window.open(String(item.main_url), "_blank", "noopener,noreferrer")} title="Transformar em criativo" className="rounded-lg bg-amber-500/15 p-2 text-amber-300"><Zap size={14} /></button>
                       <button title="Editar" className="rounded-lg bg-white/[.05] p-2 text-slate-400"><Pencil size={14} /></button>
                       <button onClick={() => remove(String(item.id || ""))} title="Excluir" className="rounded-lg bg-red-500/10 p-2 text-red-300"><Trash2 size={14} /></button>
                     </div>
