@@ -43,7 +43,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { DateRangeFilter } from "../components/date-range-filter";
-import { createRow, deleteRow, exportRepositoryBackup, getSetting, listRows, setSetting, updateRow, type Row } from "../lib/repository";
+import { createRow, deleteRow, exportRepositoryBackup, getSetting, linkSpyAndCreativeDataToCurrentUser, listRows, setSetting, updateRow, type Row } from "../lib/repository";
 import { createClient as createSupabaseClient } from "../lib/supabase";
 
 const nav = [
@@ -321,6 +321,7 @@ export default function Home() {
   const [toast, setToast] = useState("");
   const [modal, setModal] = useState(false);
   const [authReady, setAuthReady] = useState(false);
+  const [linkingData, setLinkingData] = useState(false);
 
   useEffect(() => {
     const supabase = createSupabaseClient();
@@ -399,6 +400,16 @@ export default function Home() {
     const supabase = createSupabaseClient();
     if (supabase) await supabase.auth.signOut();
     router.replace("/login");
+  };
+  const linkData = async () => {
+    setLinkingData(true);
+    try {
+      await linkSpyAndCreativeDataToCurrentUser();
+      window.location.reload();
+    } catch {
+      notify("Não foi possível vincular os dados. Confirme o perfil de administrador.");
+      setLinkingData(false);
+    }
   };
 
   if (!authReady) {
@@ -479,6 +490,9 @@ export default function Home() {
             </div>
             <button onClick={logout} className="mt-3 flex w-full items-center gap-2 rounded-xl bg-white/[.05] px-3 py-2 text-xs font-bold text-slate-400 transition hover:text-amber-200">
               <LogOut size={14} />Sair
+            </button>
+            <button onClick={linkData} className="mt-2 flex w-full items-center gap-2 rounded-xl bg-white/[.05] px-3 py-2 text-left text-xs font-bold text-slate-400 transition hover:text-amber-200">
+              <ShieldCheck size={14} />{linkingData ? "Vinculando..." : "Vincular dados ao meu usuário"}
             </button>
           </Card>
         </div>

@@ -48,6 +48,14 @@ export async function deleteRow(table: TableName, id: string) {
   if (error) throw error;
 }
 
+export async function linkSpyAndCreativeDataToCurrentUser() {
+  const supabase = createClient();
+  if (!supabase) throw new Error("Configure o Supabase.");
+  const { data, error } = await supabase.rpc("claim_existing_spy_and_creative_data");
+  if (error) throw error;
+  return data;
+}
+
 export function getSetting(name: string, fallback: string) {
   return localStorage.getItem(settingKey(name)) || fallback;
 }

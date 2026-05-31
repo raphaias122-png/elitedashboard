@@ -282,3 +282,49 @@ end;
 $$;
 drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created after insert on auth.users for each row execute procedure public.handle_new_user();
+
+create or replace function public.claim_existing_spy_and_creative_data() returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  current_user_id uuid := auth.uid();
+  current_user_role text;
+  spy_items_count integer;
+  spy_sources_count integer;
+  creative_assets_count integer;
+  drive_creatives_count integer;
+  creative_folders_count integer;
+begin
+  if current_user_id is null then
+    raise exception 'Usuário autenticado obrigatório.';
+  end if;
+
+  select role into current_user_role from public.users where id = current_user_id;
+  if coalesce(current_user_role, '') <> 'admin' then
+    raise exception 'Apenas administradores podem vincular dados existentes.';
+  end if;
+
+  update public.spy_items set user_id = current_user_id where user_id <> current_user_id;
+  get diagnostics spy_items_count = row_count;
+  update public.spy_sources set user_id = current_user_id where user_id <> current_user_id;
+  get diagnostics spy_sources_count = row_count;
+  update public.creative_assets set user_id = current_user_id where user_id <> current_user_id;
+  get diagnostics creative_assets_count = row_count;
+  update public.drive_creatives set user_id = current_user_id where user_id <> current_user_id;
+  get diagnostics drive_creatives_count = row_count;
+  update public.creative_folders set user_id = current_user_id where user_id <> current_user_id;
+  get diagnostics creative_folders_count = row_count;
+
+  return jsonb_build_object(
+    'spy_items', spy_items_count,
+    'spy_sources', spy_sources_count,
+    'creative_assets', creative_assets_count,
+    'drive_creatives', drive_creatives_count,
+    'creative_folders', creative_folders_count
+  );
+end;
+$$;
+revoke all on function public.claim_existing_spy_and_creative_data() from public;
+grant execute on function public.claim_existing_spy_and_creative_data() to authenticated;
