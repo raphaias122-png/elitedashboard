@@ -70,6 +70,12 @@ type SpyRow = Row & {
   status?: string;
   tags?: string[];
 };
+type SpySource = Row & {
+  name?: string;
+  source_url?: string;
+  source_type?: string;
+  status?: string;
+};
 type Tone = "gold" | "green" | "orange" | "blue" | "pink";
 type OverviewMetrics = {
   budget: number;
@@ -316,8 +322,8 @@ export default function Home() {
   const [mobile, setMobile] = useState(false);
   const [search, setSearch] = useState("");
   const [spy, setSpy] = useState<SpyRow[]>([]);
+  const [spySources, setSpySources] = useState<SpySource[]>([]);
   const [spyForm, setSpyForm] = useState({ brand: "", ad_url: "", angle: "", notes: "" });
-  const [importingSpy, setImportingSpy] = useState(false);
   const [toast, setToast] = useState("");
   const [modal, setModal] = useState(false);
   const [authReady, setAuthReady] = useState(false);
@@ -346,7 +352,15 @@ export default function Home() {
   );
 
   useEffect(() => {
-    listRows("spy_items").then((rows) => setSpy(rows as SpyRow[])).catch(() => setSpy([]));
+    Promise.all([listRows("spy_items"), listRows("spy_sources")])
+      .then(([items, sources]) => {
+        setSpy(items as SpyRow[]);
+        setSpySources(sources as SpySource[]);
+      })
+      .catch(() => {
+        setSpy([]);
+        setSpySources([]);
+      });
   }, []);
 
   const notify = (message: string) => {
@@ -377,24 +391,6 @@ export default function Home() {
     await deleteRow("spy_items", id);
     setSpy((await listRows("spy_items")) as SpyRow[]);
     notify("Anúncio removido");
-  };
-  const importSpy = async () => {
-    setImportingSpy(true);
-    try {
-      const response = await fetch("/api/import-spy");
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Falha na importação.");
-      const existing = new Set(spy.map((item) => String(item.main_url || item.name || "")));
-      for (const item of data.items as SpyRow[]) {
-        if (!existing.has(String(item.main_url || item.name || ""))) await createRow("spy_items", item);
-      }
-      setSpy((await listRows("spy_items")) as SpyRow[]);
-      notify("Documento SPY importado");
-    } catch {
-      notify("Não foi possível importar o documento SPY");
-    } finally {
-      setImportingSpy(false);
-    }
   };
   const logout = async () => {
     const supabase = createSupabaseClient();
@@ -523,7 +519,7 @@ export default function Home() {
           ) : active === "Criativos" ? (
             <Creatives />
           ) : active === "SPY" ? (
-            <Spy rows={visibleSpy} search={search} setSearch={setSearch} add={() => setModal(true)} importRows={importSpy} importing={importingSpy} remove={removeSpy} notify={notify} />
+            <Spy rows={visibleSpy} sources={spySources} search={search} setSearch={setSearch} add={() => setModal(true)} remove={removeSpy} notify={notify} />
           ) : active === "Páginas" ? (
             <Paginas />
           ) : active === "Workspace" ? (
@@ -796,21 +792,24 @@ function CampaignTable({ campaigns, dailyMetrics }: { campaigns: CampaignRecord[
 }
 
 function Creatives() {
-  const sources = [
+  const defaultFolders = [
     { label: "Criativos Prontos", type: "pronto", url: "https://drive.google.com/drive/folders/1ik_S2JepbqR-MdNVbtytF0SPV8POtbGh" },
     { label: "Criativos Para Modelar", type: "para_modelar", url: "https://drive.google.com/drive/folders/1oJ5Dgs63qLlCUjYvxq-sg0-_YUOA6i9c" },
   ];
   const [records, setRecords] = useState<Row[]>([]);
+  const [folders, setFolders] = useState<Row[]>([]);
   const [activeSource, setActiveSource] = useState("pronto");
   const [loading, setLoading] = useState(true);
-  const [importing, setImporting] = useState(false);
-  const [driveConfigured, setDriveConfigured] = useState<boolean | null>(null);
 
   const reload = async () => {
     setLoading(true);
     try {
-      const assets = await listRows("creative_assets");
-      setRecords(assets.length ? assets : await listRows("drive_creatives"));
+      const [folderRows, assetRows] = await Promise.all([
+        listRows("creative_folders"),
+        listRows("creative_assets"),
+      ]);
+      setFolders(folderRows);
+      setRecords(assetRows);
     } finally {
       setLoading(false);
     }
@@ -818,35 +817,17 @@ function Creatives() {
 
   useEffect(() => {
     reload();
-    fetch("/api/import-creatives?status=1")
-      .then((response) => response.json())
-      .then((data) => setDriveConfigured(Boolean(data.configured)))
-      .catch(() => setDriveConfigured(false));
   }, []);
-
-  const importFromDrive = async () => {
-    setImporting(true);
-    try {
-      const response = await fetch("/api/import-creatives");
-      const data = await response.json();
-      if (!response.ok || !data.configured) {
-        setDriveConfigured(false);
-        return;
-      }
-      setDriveConfigured(true);
-      const existing = new Set(records.map((record) => String(record.drive_file_id || "")));
-      for (const item of data.items as Row[]) {
-        if (!existing.has(String(item.drive_file_id || ""))) await createRow("creative_assets", item);
-      }
-      await reload();
-    } finally {
-      setImporting(false);
-    }
-  };
 
   const sourceType = (record: Row) => String(record.origin_folder || record.status || "").toLowerCase().replaceAll(" ", "_");
   const visible = records.filter((record) => sourceType(record) === activeSource);
-  const currentSource = sources.find((source) => source.type === activeSource) || sources[0];
+  const folderSources = folders.length ? folders.map((folder) => ({
+    label: String(folder.name || folder.folder_type || "Pasta de criativos"),
+    type: String(folder.folder_type || "").toLowerCase().replaceAll(" ", "_"),
+    url: String(folder.drive_url || ""),
+    status: String(folder.status || "active"),
+  })) : defaultFolders;
+  const currentSource = folderSources.find((source) => source.type === activeSource) || folderSources[0];
 
   return (
     <div className="rise space-y-5">
@@ -855,24 +836,22 @@ function Creatives() {
           <h2 className="text-xl font-bold">Biblioteca de criativos</h2>
           <p className="mt-1 text-xs text-slate-500">Encontre os formatos e ângulos que mais convertem.</p>
         </div>
-        {!records.length && <Btn onClick={importFromDrive}><Download size={15} />{importing ? "Importando..." : "Importar do Drive"}</Btn>}
       </div>
       <div className="grid gap-3 md:grid-cols-2">
-        {sources.map((source) => (
+        {folderSources.map((source) => (
           <Card key={source.type} className="p-4">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-sm font-bold">{source.label}</p>
                 <p className="mt-1 text-[10px] text-slate-500">Google Drive configurado</p>
               </div>
-              <a href={source.url} target="_blank" rel="noreferrer" className="rounded-lg bg-white/[.05] p-2 text-slate-300"><ExternalLink size={15} /></a>
+              {source.url && <a href={source.url} target="_blank" rel="noreferrer" className="rounded-lg bg-white/[.05] p-2 text-slate-300"><ExternalLink size={15} /></a>}
             </div>
           </Card>
         ))}
       </div>
-      {driveConfigured === false && <Card className="p-4 text-xs text-amber-200">Conecte Google Drive para importar arquivos individualmente.</Card>}
       <div className="flex flex-wrap gap-2">
-        {sources.map((source) => (
+        {folderSources.map((source) => (
           <button key={source.type} onClick={() => setActiveSource(source.type)} className={`rounded-full border px-3 py-2 text-[10px] font-bold ${activeSource === source.type ? "border-amber-400/40 bg-amber-400/15 text-amber-200" : "border-white/10 bg-white/[.03] text-slate-400"}`}>
             {source.label}
           </button>
@@ -899,7 +878,8 @@ function Creatives() {
           </Card>
         ))}
       </div>
-      {!loading && !visible.length && <Card className="p-5 text-center text-xs text-slate-500">Nenhum criativo importado nesta pasta.</Card>}
+      {!loading && !records.length && <Card className="p-5 text-center text-xs text-slate-500">Pastas configuradas. Nenhum asset cadastrado em creative_assets.</Card>}
+      {!loading && Boolean(records.length) && !visible.length && <Card className="p-5 text-center text-xs text-slate-500">Nenhum asset cadastrado nesta pasta.</Card>}
       {loading && <Card className="p-5 text-center text-xs text-slate-500">Carregando criativos...</Card>}
     </div>
   );
@@ -907,23 +887,28 @@ function Creatives() {
 
 function Spy({
   rows,
+  sources,
   search,
   setSearch,
   add,
-  importRows,
-  importing,
   remove,
   notify,
 }: {
   rows: SpyRow[];
+  sources: SpySource[];
   search: string;
   setSearch: (value: string) => void;
   add: () => void;
-  importRows: () => void;
-  importing: boolean;
   remove: (id?: string) => void;
   notify: (message: string) => void;
 }) {
+  const defaultSource: SpySource = {
+    name: "SPY IGAMING CHILE",
+    source_url: "https://docs.google.com/document/d/1rWTk54TMAvXxBmtcX19LYx_Vcoe-FP2voB_Y9Riisns/edit?tab=t.0",
+    source_type: "google_docs",
+    status: "active",
+  };
+  const visibleSources = sources.length ? sources : [defaultSource];
   const counters: [string, string, LucideIcon][] = [
     ["Anúncios salvos", String(rows.length), Target],
     ["Em análise", String(rows.filter((row) => String(row.status || "").toLowerCase() === "analisando").length), Search],
@@ -938,10 +923,24 @@ function Spy({
           <p className="mt-1 text-xs text-slate-500">Radar inteligente de oportunidades e referências.</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          {!rows.length && <Btn secondary onClick={importRows}><Download size={15} />{importing ? "Importando..." : "Importar documento"}</Btn>}
           <Btn onClick={add}><Plus size={15} />Salvar anúncio spy</Btn>
         </div>
       </div>
+      {!rows.length && (
+        <div className="grid gap-3 md:grid-cols-2">
+          {visibleSources.map((source) => (
+            <Card key={String(source.id || source.source_url)} className="p-4">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-bold">{source.name || "Documento SPY principal"}</p>
+                  <p className="mt-1 text-[10px] text-slate-500">{source.source_type || "google_docs"} · {source.status || "active"}</p>
+                </div>
+                {source.source_url && <a href={source.source_url} target="_blank" rel="noreferrer" className="rounded-lg bg-white/[.05] p-2 text-slate-300"><ExternalLink size={15} /></a>}
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
       <div className="grid gap-3 md:grid-cols-3">
         {counters.map(([label, value, Icon], index) => (
           <Card key={label} className="p-4">
