@@ -793,23 +793,16 @@ function CampaignTable({ campaigns, dailyMetrics }: { campaigns: CampaignRecord[
 
 function Creatives() {
   const defaultFolders = [
-    { label: "Criativos Prontos", type: "pronto", url: "https://drive.google.com/drive/folders/1ik_S2JepbqR-MdNVbtytF0SPV8POtbGh" },
-    { label: "Criativos Para Modelar", type: "para_modelar", url: "https://drive.google.com/drive/folders/1oJ5Dgs63qLlCUjYvxq-sg0-_YUOA6i9c" },
+    { label: "Criativos Prontos", type: "pronto", description: "Pasta com criativos prontos para uso na operacao.", url: "https://drive.google.com/drive/folders/1ik_S2JepbqR-MdNVbtytF0SPV8POtbGh" },
+    { label: "Criativos Para Modelar", type: "para_modelar", description: "Pasta com referencias e criativos para modelagem/adaptacao.", url: "https://drive.google.com/drive/folders/1oJ5Dgs63qLlCUjYvxq-sg0-_YUOA6i9c" },
   ];
-  const [records, setRecords] = useState<Row[]>([]);
   const [folders, setFolders] = useState<Row[]>([]);
-  const [activeSource, setActiveSource] = useState("pronto");
   const [loading, setLoading] = useState(true);
 
   const reload = async () => {
     setLoading(true);
     try {
-      const [folderRows, assetRows] = await Promise.all([
-        listRows("creative_folders"),
-        listRows("creative_assets"),
-      ]);
-      setFolders(folderRows);
-      setRecords(assetRows);
+      setFolders(await listRows("creative_folders"));
     } finally {
       setLoading(false);
     }
@@ -819,15 +812,15 @@ function Creatives() {
     reload();
   }, []);
 
-  const sourceType = (record: Row) => String(record.origin_folder || record.status || "").toLowerCase().replaceAll(" ", "_");
-  const visible = records.filter((record) => sourceType(record) === activeSource);
-  const folderSources = folders.length ? folders.map((folder) => ({
-    label: String(folder.name || folder.folder_type || "Pasta de criativos"),
-    type: String(folder.folder_type || "").toLowerCase().replaceAll(" ", "_"),
-    url: String(folder.drive_url || ""),
-    status: String(folder.status || "active"),
-  })) : defaultFolders;
-  const currentSource = folderSources.find((source) => source.type === activeSource) || folderSources[0];
+  const findFolder = (label: string, type: string) => folders.find((folder) => {
+    const name = String(folder.name || "").toLowerCase();
+    const folderType = String(folder.folder_type || "").toLowerCase();
+    return name.includes(label.toLowerCase()) || folderType.includes(type);
+  });
+  const folderSources = defaultFolders.map((source) => {
+    const folder = findFolder(source.label, source.type);
+    return { ...source, url: String(folder?.drive_url || source.url) };
+  });
 
   return (
     <div className="rise space-y-5">
@@ -837,50 +830,22 @@ function Creatives() {
           <p className="mt-1 text-xs text-slate-500">Encontre os formatos e ângulos que mais convertem.</p>
         </div>
       </div>
-      <div className="grid gap-3 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2">
         {folderSources.map((source) => (
-          <Card key={source.type} className="p-4">
-            <div className="flex items-center justify-between gap-3">
+          <Card key={source.type} className="p-6">
+            <div className="flex h-full flex-col justify-between gap-5">
               <div>
-                <p className="text-sm font-bold">{source.label}</p>
-                <p className="mt-1 text-[10px] text-slate-500">Google Drive configurado</p>
+                <p className="text-lg font-bold">{source.label}</p>
+                <p className="mt-2 text-sm text-slate-400">{source.description}</p>
               </div>
-              {source.url && <a href={source.url} target="_blank" rel="noreferrer" className="rounded-lg bg-white/[.05] p-2 text-slate-300"><ExternalLink size={15} /></a>}
+              <button onClick={() => window.open(source.url, "_blank", "noopener,noreferrer")} className="inline-flex w-fit items-center gap-2 rounded-xl bg-amber-500/15 px-4 py-3 text-xs font-bold text-amber-200">
+                <ExternalLink size={15} />Abrir pasta
+              </button>
             </div>
           </Card>
         ))}
       </div>
-      <div className="flex flex-wrap gap-2">
-        {folderSources.map((source) => (
-          <button key={source.type} onClick={() => setActiveSource(source.type)} className={`rounded-full border px-3 py-2 text-[10px] font-bold ${activeSource === source.type ? "border-amber-400/40 bg-amber-400/15 text-amber-200" : "border-white/10 bg-white/[.03] text-slate-400"}`}>
-            {source.label}
-          </button>
-        ))}
-      </div>
-      <p className="text-xs font-bold text-slate-300">{currentSource.label}</p>
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {visible.map((creative) => (
-          <Card key={String(creative.id || creative.drive_file_id)} className="overflow-hidden">
-            <div className="relative grid h-52 place-items-center bg-gradient-to-br from-slate-800 to-slate-950">
-              {creative.thumbnail_url ? <img src={String(creative.thumbnail_url)} alt={String(creative.file_name || "Criativo")} className="h-full w-full object-cover" /> : <Image size={36} className="text-slate-500" />}
-              <div className="absolute bottom-3 left-3"><Badge>{String(creative.niche || "CRIATIVO")}</Badge></div>
-              {Boolean(creative.drive_url) && <a href={String(creative.drive_url)} target="_blank" rel="noreferrer" className="absolute right-3 top-3 rounded-lg bg-black/20 p-2"><ExternalLink size={15} /></a>}
-            </div>
-            <div className="p-4">
-              <div className="flex justify-between gap-3">
-                <div>
-                  <b className="text-sm">{String(creative.file_name || "Criativo")}</b>
-                  <p className="mt-1 text-[10px] text-slate-500">{String(creative.file_type || "Arquivo do Drive")}</p>
-                </div>
-                <Badge tone="green">ATIVO</Badge>
-              </div>
-            </div>
-          </Card>
-        ))}
-      </div>
-      {!loading && !records.length && <Card className="p-5 text-center text-xs text-slate-500">Pastas configuradas. Nenhum asset cadastrado em creative_assets.</Card>}
-      {!loading && Boolean(records.length) && !visible.length && <Card className="p-5 text-center text-xs text-slate-500">Nenhum asset cadastrado nesta pasta.</Card>}
-      {loading && <Card className="p-5 text-center text-xs text-slate-500">Carregando criativos...</Card>}
+      {loading && <Card className="p-5 text-center text-xs text-slate-500">Carregando pastas...</Card>}
     </div>
   );
 }
@@ -902,6 +867,7 @@ function Spy({
   remove: (id?: string) => void;
   notify: (message: string) => void;
 }) {
+  const mainSpy = rows.find((item) => String(item.name || item.brand || "").toLowerCase().includes("spy igaming chile")) || rows.find((item) => Boolean(item.main_url));
   const defaultSource: SpySource = {
     name: "SPY IGAMING CHILE",
     source_url: "https://docs.google.com/document/d/1rWTk54TMAvXxBmtcX19LYx_Vcoe-FP2voB_Y9Riisns/edit?tab=t.0",
@@ -909,6 +875,7 @@ function Spy({
     status: "active",
   };
   const visibleSources = sources.length ? sources : [defaultSource];
+  const spyUrl = String(mainSpy?.main_url || visibleSources[0]?.source_url || defaultSource.source_url);
   const counters: [string, string, LucideIcon][] = [
     ["Anúncios salvos", String(rows.length), Target],
     ["Em análise", String(rows.filter((row) => String(row.status || "").toLowerCase() === "analisando").length), Search],
@@ -926,6 +893,18 @@ function Spy({
           <Btn onClick={add}><Plus size={15} />Salvar anúncio spy</Btn>
         </div>
       </div>
+      <Card className="p-6">
+        <div className="flex flex-wrap items-center justify-between gap-5">
+          <div>
+            <p className="text-lg font-bold">Spy feita dia 29/05</p>
+            <p className="mt-2 max-w-2xl text-sm text-slate-400">Nesse spy tem: Casas e Marcas do Chile / Jogos e Produtos / Funil Telegram e WhatsApp / LPs e PWA.</p>
+          </div>
+          <button onClick={() => window.open(spyUrl, "_blank", "noopener,noreferrer")} className="inline-flex items-center gap-2 rounded-xl bg-amber-500/15 px-4 py-3 text-xs font-bold text-amber-200">
+            <ExternalLink size={15} />Abrir SPY
+          </button>
+        </div>
+      </Card>
+      {false && (<>
       {!rows.length && (
         <div className="grid gap-3 md:grid-cols-2">
           {visibleSources.map((source) => (
@@ -994,6 +973,7 @@ function Spy({
           </table>
         </div>
       </Card>
+      </>)}
     </div>
   );
 }
