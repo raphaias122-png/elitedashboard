@@ -1,0 +1,73 @@
+{
+  "source": "https://ad.cl.bet7k.com/Jj3VVY6H",
+  "clonedAt": "2026-05-27T17:58:06.985Z",
+  "assets": [
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Russo+One&family=Roboto:wght@400;500;700;800;900&display=swap",
+      "path": "_external/fonts.googleapis.com/css2/index.html",
+      "bytes": 1487,
+      "ct": "text/css; charset=utf-8"
+    },
+    {
+      "url": "https://ad.cl.bet7k.com/Jj3VVY6H",
+      "path": "Jj3VVY6H/index.html",
+      "bytes": 26208,
+      "ct": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://fonts.gstatic.com/s/russoone/v18/Z9XUDmZRWg6M1LvRYsH-yA.ttf",
+      "path": "_external/fonts.gstatic.com/s/russoone/v18/Z9XUDmZRWg6M1LvRYsH-yA.ttf",
+      "bytes": 36816,
+      "ct": "font/ttf"
+    },
+    {
+      "url": "https://ad.cl.bet7k.com/lander/lp-05---roleta-ganadora---100-fs-gates-of-olympys/assets/roulette.webp",
+      "path": "lander/lp-05---roleta-ganadora---100-fs-gates-of-olympys/assets/roulette.webp",
+      "bytes": 59888,
+      "ct": "image/webp"
+    },
+    {
+      "url": "https://ad.cl.bet7k.com/lander/lp-05---roleta-ganadora---100-fs-gates-of-olympys/assets/headline.webp",
+      "path": "lander/lp-05---roleta-ganadora---100-fs-gates-of-olympys/assets/headline.webp",
+      "bytes": 11422,
+      "ct": "image/webp"
+    },
+    {
+      "url": "https://ad.cl.bet7k.com/lander/lp-05---roleta-ganadora---100-fs-gates-of-olympys/assets/pointer.webp",
+      "path": "lander/lp-05---roleta-ganadora---100-fs-gates-of-olympys/assets/pointer.webp",
+      "bytes": 8432,
+      "ct": "image/webp"
+    },
+    {
+      "url": "https://ad.cl.bet7k.com/lander/lp-05---roleta-ganadora---100-fs-gates-of-olympys/assets/button.svg",
+      "path": "lander/lp-05---roleta-ganadora---100-fs-gates-of-olympys/assets/button.svg",
+      "bytes": 4160,
+      "ct": "image/svg+xml"
+    },
+    {
+      "url": "https://ad.cl.bet7k.com/lander/lp-05---roleta-ganadora---100-fs-gates-of-olympys/assets/win-header.webp",
+      "path": "lander/lp-05---roleta-ganadora---100-fs-gates-of-olympys/assets/win-header.webp",
+      "bytes": 13632,
+      "ct": "image/webp"
+    },
+    {
+      "url": "https://ad.cl.bet7k.com/lander/lp-05---roleta-ganadora---100-fs-gates-of-olympys/assets/gates-olympus.webp",
+      "path": "lander/lp-05---roleta-ganadora---100-fs-gates-of-olympys/assets/gates-olympus.webp",
+      "bytes": 12928,
+      "ct": "image/webp"
+    },
+    {
+      "url": "https://ad.cl.bet7k.com/lander/lp-05---roleta-ganadora---100-fs-gates-of-olympys/assets/border.svg",
+      "path": "lander/lp-05---roleta-ganadora---100-fs-gates-of-olympys/assets/border.svg",
+      "bytes": 77216,
+      "ct": "image/svg+xml"
+    },
+    {
+      "url": "https://ad.cl.bet7k.com/lander/lp-05---roleta-ganadora---100-fs-gates-of-olympys/assets/tracker.js",
+      "path": "lander/lp-05---roleta-ganadora---100-fs-gates-of-olympys/assets/tracker.js",
+      "bytes": 1080,
+      "ct": "application/javascript"
+    }
+  ],
+  "note": "Clonado via HaonHub Clone Landing. Use somente em sites de sua propriedade ou com autorização."
+}

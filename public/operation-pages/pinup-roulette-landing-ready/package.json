@@ -1,0 +1,13 @@
+{
+  "name": "pinup-roulette-landing",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Optimized mobile-first roulette landing with Meta Pixel and Conversions API.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

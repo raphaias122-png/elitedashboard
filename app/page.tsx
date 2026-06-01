@@ -945,7 +945,7 @@ function Spy({
           <p className="mt-1 text-[10px] text-slate-500">Priorize os anúncios com maior oportunidade de adaptação</p>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[820px] text-left text-xs">
+          <table className="w-full min-w-[520px] text-left text-xs">
             <thead className="bg-white/[.025] text-[10px] uppercase text-slate-500">
               <tr>{["Marca", "Plataforma", "País", "Nicho", "Ângulo", "Potencial", "Status", "Ações"].map((header) => <th key={header} className="px-5 py-3">{header}</th>)}</tr>
             </thead>
@@ -1832,6 +1832,20 @@ function Relatorios() {
 
 function Paginas() {
   const emptyForm: PageForm = { name: "", preview_url: "", download_url: "" };
+  const localPages: PageRecord[] = [
+    {
+      id: "local-ad-cl-bet7k-pinup",
+      name: "ad.cl.bet7k.com haon clone com fundo pinup",
+      preview_url: "/operation-pages/ad-cl-bet7k-pinup/index.html",
+      download_url: "/operation-pages/ad-cl-bet7k-pinup.zip",
+    },
+    {
+      id: "local-pinup-roulette-landing-ready",
+      name: "pinup roulette landing ready",
+      preview_url: "/operation-pages/pinup-roulette-landing-ready/public/index.html",
+      download_url: "/operation-pages/pinup-roulette-landing-ready.zip",
+    },
+  ];
   const [records, setRecords] = useState<PageRecord[]>([]);
   const [form, setForm] = useState<PageForm>(emptyForm);
   const [editingId, setEditingId] = useState("");
@@ -1913,6 +1927,7 @@ function Paginas() {
     anchor.rel = "noopener noreferrer";
     anchor.click();
   };
+  const pages = [...localPages, ...records];
 
   return (
     <div className="rise space-y-5">
@@ -1960,35 +1975,30 @@ function Paginas() {
         <div className="flex items-center justify-between p-5">
           <div>
             <h3 className="text-sm font-bold">Páginas cadastradas</h3>
-            <p className="mt-1 text-[10px] text-slate-500">Sem registros falsos. Apenas páginas cadastradas ou importadas.</p>
+            <p className="mt-1 text-[10px] text-slate-500">Páginas locais disponíveis para abrir ou baixar.</p>
           </div>
           {loading && <Badge>Carregando</Badge>}
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[820px] text-left text-xs">
+          <table className="w-full min-w-[520px] text-left text-xs">
             <thead className="bg-white/[.025] text-[10px] uppercase tracking-wide text-slate-500">
-              <tr>{["Nome", "Link", "Download", "Ações"].map((header) => <th key={header} className="px-5 py-4">{header}</th>)}</tr>
+              <tr>{["Nome", "Ações"].map((header) => <th key={header} className="px-5 py-4">{header}</th>)}</tr>
             </thead>
             <tbody>
-              {records.map((record) => (
+              {pages.map((record) => (
                 <tr key={String(record.id)} className="border-t border-white/[.05]">
                   <td className="px-5 py-4 font-bold">{record.name || "-"}</td>
-                  <td className="max-w-[320px] truncate px-5 text-slate-400">{record.preview_url || "-"}</td>
-                  <td className="max-w-[320px] truncate px-5 text-slate-400">{record.download_url || "-"}</td>
                   <td className="px-5">
                     <div className="flex flex-wrap gap-2">
-                      <button onClick={() => copyLink(record.preview_url)} title="Copiar link" className="rounded-lg bg-white/[.05] p-2 text-slate-400"><Copy size={14} /></button>
-                      <button onClick={() => openLink(record.preview_url)} title="Abrir link" className="rounded-lg bg-white/[.05] p-2 text-slate-400"><ExternalLink size={14} /></button>
-                      <button onClick={() => downloadLink(record.download_url || record.preview_url)} title="Download" className="rounded-lg bg-white/[.05] p-2 text-slate-400"><Download size={14} /></button>
-                      <button onClick={() => openEdit(record)} title="Editar" className="rounded-lg bg-white/[.05] p-2 text-slate-400"><Pencil size={14} /></button>
-                      <button onClick={() => removePage(String(record.id || ""))} title="Excluir" className="rounded-lg bg-red-500/10 p-2 text-red-300"><Trash2 size={14} /></button>
+                      <button onClick={() => openLink(record.preview_url)} className="inline-flex items-center gap-2 rounded-lg bg-white/[.05] px-3 py-2 text-slate-300"><ExternalLink size={14} />Abrir</button>
+                      <button onClick={() => downloadLink(record.download_url || record.preview_url)} className="inline-flex items-center gap-2 rounded-lg bg-white/[.05] px-3 py-2 text-slate-300"><Download size={14} />Download</button>
                     </div>
                   </td>
                 </tr>
               ))}
-              {!records.length && (
+              {!pages.length && (
                 <tr>
-                  <td colSpan={4} className="px-5 py-10 text-center text-slate-500">Nenhuma página cadastrada.</td>
+                  <td colSpan={2} className="px-5 py-10 text-center text-slate-500">Nenhuma página cadastrada.</td>
                 </tr>
               )}
             </tbody>

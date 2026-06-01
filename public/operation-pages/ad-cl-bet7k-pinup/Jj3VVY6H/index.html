@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head><base href="/lander/lp-05---roleta-ganadora---100-fs-gates-of-olympys/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+<title>Ruleta Ganadora — PIN-UP</title>
+<link rel="shortcut icon" href="7k.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Roboto:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="./assets/roulette.webp" imagesrcset="./assets/roulette.webp 1x, ./assets/roulette@2x.webp 2x">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --rl-lime:       #ff3b35;
+  --rl-lime-2:     #c9141f;
+  --rl-gold:       #f0c01a;
+  --rl-card:       #1a1f2e;
+  --rl-card-2:     #0e1320;
+  --rl-text:       #ffffff;
+  --rl-text-mute:  rgba(255,255,255,0.65);
+}
+
+html, body { width: 100%; height: 100%; overflow: hidden; }
+body {
+  font-family: 'Roboto', -apple-system, sans-serif;
+  color: var(--rl-text);
+  position: relative;
+  background: #0a0a0a;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* ── BACKGROUND LAYER: PIN-UP Chile casino preview ── */
+.bg-image {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  background-color: #0a0f12;
+  background-image: url("./assets/pinup-chile-bg-user.png");
+  background-position: center top;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  filter: blur(2.2px) brightness(0.86) saturate(0.95);
+  transform: scale(1.014);
+  transform-origin: center center;
+}
+.pinup-preview {
+  display: none;
+}
+.pinup-side {
+  background: #11151d;
+  border-right: 1px solid rgba(255,255,255,0.06);
+  padding: 18px 16px;
+}
+.pinup-side-logo {
+  color: #ff2d19;
+  font: 900 italic 44px/0.9 Arial, sans-serif;
+  letter-spacing: -2px;
+  display: inline-block;
+  padding-bottom: 7px;
+  border-bottom: 3px solid #0dc7a7;
+  margin-bottom: 54px;
+}
+.pinup-menu {
+  display: grid;
+  gap: 17px;
+}
+.pinup-menu-row {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  align-items: center;
+  color: rgba(255,255,255,0.58);
+  font-size: 16px;
+  font-weight: 700;
+}
+.pinup-menu-row.active { color: #fff; }
+.pinup-menu-row .ico {
+  color: #ff2d19;
+  font-size: 21px;
+  text-align: center;
+}
+.pinup-main {
+  padding: 16px 24px 0;
+  min-width: 0;
+}
+.pinup-top {
+  display: grid;
+  grid-template-columns: 300px 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+  height: 48px;
+}
+.pinup-top-icons {
+  display: flex;
+  gap: 28px;
+  color: rgba(255,255,255,0.58);
+  font-size: 24px;
+}
+.pinup-bonus-line {
+  justify-self: end;
+  font-size: 16px;
+  font-weight: 900;
+  color: #fff;
+  white-space: nowrap;
+}
+.pinup-btn {
+  border: 1px solid #ff2d19;
+  background: transparent;
+  color: #fff;
+  padding: 12px 22px;
+  border-radius: 4px;
+  font-weight: 900;
+  font-size: 15px;
+}
+.pinup-btn.primary {
+  background: #ff2d19;
+}
+.pinup-hero {
+  height: 390px;
+  margin-top: 24px;
+  border-radius: 3px;
+  background:
+    radial-gradient(circle at 78% 43%, rgba(255,64,42,0.78), transparent 25%),
+    radial-gradient(circle at 90% 56%, rgba(255,194,41,0.38), transparent 18%),
+    linear-gradient(90deg, #150604 0%, #260706 42%, #7e0f0d 70%, #180809 100%);
+  display: grid;
+  grid-template-columns: 42% 58%;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+}
+.pinup-hero-copy {
+  padding-left: 64px;
+  font-style: italic;
+  text-shadow: 0 3px 10px rgba(0,0,0,0.65);
+}
+.pinup-hero-copy h2 {
+  font-size: clamp(42px, 4.4vw, 62px);
+  line-height: 0.98;
+  margin-bottom: 24px;
+}
+.pinup-hero-copy p {
+  font-size: clamp(28px, 3vw, 40px);
+  line-height: 1.05;
+  font-weight: 900;
+}
+.pinup-hero-copy .cta {
+  display: inline-block;
+  margin-top: 34px;
+  background: #ff2d19;
+  padding: 18px 54px;
+  border-radius: 4px;
+  font-style: normal;
+  font-size: 24px;
+  font-weight: 900;
+}
+.pinup-hero-art {
+  position: relative;
+  height: 100%;
+}
+.pinup-bonus-word {
+  position: absolute;
+  right: 8%;
+  top: 24%;
+  color: #d31816;
+  font: 900 104px/0.85 Arial, sans-serif;
+  transform: skew(-5deg);
+  text-shadow: 0 8px 0 rgba(0,0,0,0.28), 0 0 32px rgba(255,38,24,0.8);
+}
+.pinup-model {
+  position: absolute;
+  right: 18%;
+  bottom: -10px;
+  width: 170px;
+  height: 292px;
+  border-radius: 80px 80px 18px 18px;
+  background:
+    radial-gradient(circle at 50% 18%, #ffd4b4 0 16%, transparent 17%),
+    linear-gradient(#fff 0 34%, #d91e24 35% 100%);
+  box-shadow: 0 0 38px rgba(255,255,255,0.18);
+}
+.pinup-coin {
+  position: absolute;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffd86b 0 35%, #b87108 70%);
+  box-shadow: 0 0 18px rgba(255,210,80,0.45);
+}
+.pinup-coin.c1 { right: 7%; top: 12%; }
+.pinup-coin.c2 { right: 35%; top: 47%; transform: scale(.75); }
+.pinup-tabs {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  height: 74px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.52);
+  font-size: 15px;
+  font-weight: 800;
+}
+.pinup-tab {
+  display: grid;
+  gap: 4px;
+  justify-items: center;
+  min-width: 74px;
+}
+.pinup-tab.active { color: #fff; }
+.pinup-tab .tab-ico {
+  color: #ff2d19;
+  font-size: 24px;
+}
+.pinup-games-title {
+  font-size: 18px;
+  font-weight: 900;
+  margin: 16px 0 12px;
+}
+.pinup-games {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(160px, 1fr));
+  gap: 10px;
+}
+.pinup-game {
+  height: 178px;
+  border-radius: 5px;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  text-align: center;
+  color: #fff;
+  font: 900 28px/0.95 Arial, sans-serif;
+  text-shadow: 0 3px 8px rgba(0,0,0,0.8);
+  overflow: hidden;
+}
+.pinup-game:nth-child(1) { background: radial-gradient(circle, #ffd72a, #dd2a10 58%, #520603); }
+.pinup-game:nth-child(2) { background: radial-gradient(circle, #38c079, #1c388f 62%, #11133f); }
+.pinup-game:nth-child(3) { background: radial-gradient(circle, #fff06b, #0874c8 62%, #101649); }
+.pinup-game:nth-child(4) { background: radial-gradient(circle, #ff6b73, #3726a6 62%, #1a0f5c); }
+.pinup-game:nth-child(5) { background: radial-gradient(circle, #fff58e, #26a469 62%, #0c3424); }
+.bg-image::before {
+  display: none;
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("./assets/pinup-chile-bg.png");
+  background-position: center top;
+  background-size: contain;
+  background-repeat: no-repeat;
+  opacity: 0.78;
+}
+.bg-image::after {
+  display: none;
+  content: "PIN-UP";
+  position: absolute;
+  top: 15px;
+  left: 18px;
+  color: #ff3b35;
+  font: italic 900 30px/1 Arial, sans-serif;
+  letter-spacing: 0;
+}
+.bg-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(circle at 50% 52%, rgba(0,0,0,0.00) 0%, rgba(0,0,0,0.06) 35%, rgba(0,0,0,0.30) 100%),
+    linear-gradient(180deg, rgba(0,0,0,0.10), rgba(0,0,0,0.24));
+  pointer-events: none;
+}
+.bg-localization {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  font-family: 'Roboto', -apple-system, sans-serif;
+  color: rgba(255,255,255,0.92);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.95);
+}
+.bg-cover {
+  position: absolute;
+  background: rgba(17,21,28,0.86);
+  border-radius: 4px;
+  box-shadow: 0 0 12px rgba(17,21,28,0.55);
+}
+.bg-copy {
+  position: absolute;
+  font-weight: 800;
+  font-size: 14px;
+  line-height: 1.12;
+  white-space: nowrap;
+}
+.bg-copy.small { font-size: 12px; font-weight: 800; }
+.bg-copy.section { font-size: 19px; }
+.bg-copy.value { color: #18b96d; font-size: 24px; letter-spacing: 0; }
+.bg-copy.button {
+  color: #20242a;
+  background: rgba(255,255,255,0.92);
+  text-shadow: none;
+  padding: 10px 14px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+/* ── MAIN STAGE (vertically scrollable on tiny screens) ── */
+.rl-stage-wrap {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+  overflow-y: auto;
+}
+
+/* ── HEADER ── */
+.rl-header {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 14px 4px;
+  position: relative;
+  filter: drop-shadow(0 8px 24px rgba(0,0,0,0.55));
+}
+.rl-header .brand {
+  width: 92%;
+  max-width: 340px;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 0 24px rgba(255,59,53,0.45));
+}
+.pinup-brand {
+  width: 92%;
+  max-width: 300px;
+  display: grid;
+  gap: 3px;
+  justify-items: center;
+  text-align: center;
+  filter: drop-shadow(0 0 24px rgba(255,59,53,0.45));
+}
+.pinup-logo {
+  width: min(104px, 34vw);
+  height: auto;
+  display: block;
+}
+.pinup-title {
+  font-family: 'Russo One', sans-serif;
+  font-size: clamp(36px, 9.5vw, 58px);
+  line-height: 0.9;
+  color: #ffffff;
+  text-shadow:
+    0 3px 0 #12131a,
+    0 0 18px rgba(255,59,53,0.55),
+    0 10px 24px rgba(0,0,0,0.75);
+}
+.pinup-title span {
+  display: block;
+  color: #ff3b35;
+}
+.rl-header .gira {
+  display: inline-block;
+  font-family: 'Russo One', sans-serif;
+  font-size: 16px;
+  letter-spacing: 2.5px;
+  margin-top: 8px;
+  color: #ffffff;
+  background: linear-gradient(180deg, rgba(44,8,10,0.94) 0%, rgba(14,6,8,0.98) 100%);
+  padding: 5px 16px 7px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(255,59,53,0.78);
+  box-shadow:
+    0 4px 14px rgba(0,0,0,0.55),
+    0 0 16px rgba(255,59,53,0.42),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+  text-shadow:
+    1px 1px 0 #3a0508,
+    0 0 8px rgba(255,59,53,0.58),
+    0 2px 4px rgba(0,0,0,0.7);
+  transform: skew(-4deg, 0deg);
+}
+
+/* ── WHEEL ── */
+.rl-stage {
+  width: 100%;
+  max-width: 480px;
+  padding: 8px 10px 4px;
+  display: grid;
+  place-items: center;
+}
+.wheel-frame {
+  position: relative;
+  width: min(430px, 94vw, 54vh);
+  aspect-ratio: 1 / 1;
+  filter:
+    drop-shadow(0 24px 56px rgba(0,0,0,0.78))
+    drop-shadow(0 0 30px rgba(255,35,35,0.46));
+}
+.wheel-frame > * {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.wheel-image {
+  border-radius: 50%;
+  transition: transform 4.4s cubic-bezier(0.18, 0.85, 0.25, 1);
+  transform: rotate(0deg);
+  z-index: 1;
+  box-shadow:
+    0 0 0 2px rgba(255,64,64,0.16),
+    0 0 34px rgba(255,35,35,0.26);
+}
+.wheel-image.idle { animation: idleWobble 2.6s ease-in-out infinite; }
+@keyframes idleWobble {
+  0%, 100% { transform: rotate(-1.5deg); }
+  50%      { transform: rotate( 1.5deg); }
+}
+.wheel-border { pointer-events: none; z-index: 2; }
+.wheel-pointer {
+  width: 14%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  left: 50%;
+  top: -4%;
+  transform: translateX(-50%);
+  z-index: 4;
+  filter: drop-shadow(0 3px 6px rgba(0,0,0,0.6));
+}
+.wheel-button {
+  position: absolute;
+  width: 24%;
+  height: 24%;
+  aspect-ratio: 1 / 1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  padding: 0;
+  z-index: 5;
+  border-radius: 50%;
+  box-shadow: 0 0 30px rgba(0,0,0,0.7);
+  transition: transform 0.12s ease, filter 0.12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.wheel-button img { width: 100%; height: 100%; display: block; border-radius: 50%; }
+.wheel-button:hover:not(:disabled) { filter: brightness(1.08); }
+.wheel-button:active:not(:disabled) { transform: translate(-50%, -50%) scale(0.94); }
+.wheel-button:disabled { cursor: not-allowed; filter: grayscale(0.45) brightness(0.7); }
+
+/* ── PRIZE MODAL ── */
+.rl-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 18px;
+  animation: overlayIn 0.25s ease;
+}
+.rl-overlay.show { display: flex; }
+@keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
+.rl-modal {
+  width: 100%;
+  max-width: 380px;
+  background: var(--rl-card);
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+  position: relative;
+  animation: modalIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  border: 1px solid rgba(255,255,255,0.06);
+  max-height: 95vh;
+  overflow-y: auto;
+}
+@keyframes modalIn {
+  from { transform: scale(0.85) translateY(20px); opacity: 0; }
+  to   { transform: scale(1) translateY(0);       opacity: 1; }
+}
+.rl-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.45);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: #fff;
+  font-size: 20px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  z-index: 5;
+  transition: background 0.15s ease;
+}
+.rl-modal-close:hover { background: rgba(0,0,0,0.7); }
+.rl-modal-hero {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  position: relative;
+  overflow: hidden;
+  background: #0a0a14;
+}
+.rl-modal-hero .zeus {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 18%;
+  display: block;
+}
+.rl-modal-hero::after {
+  /* soft fade at the bottom so the logo reads cleanly */
+  content: "";
+  position: absolute;
+  inset: 50% 0 0 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 0%, rgba(8,4,28,0.7) 75%, rgba(8,4,28,0.92) 100%);
+}
+.rl-modal-hero .game-logo {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 78%;
+  max-width: 280px;
+  height: auto;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.85));
+  pointer-events: none;
+  z-index: 1;
+}
+.rl-modal-body { padding: 12px 20px 16px; text-align: center; }
+.rl-modal-body h2 {
+  font-family: 'Russo One', sans-serif;
+  font-size: 20px;
+  letter-spacing: 0.5px;
+  color: #fff;
+  margin-bottom: 10px;
+  line-height: 1.15;
+}
+.rl-bonus {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background: var(--rl-card-2);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 10px;
+  margin-bottom: 12px;
+  text-align: left;
+}
+.rl-bonus-icon {
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 25%, #c8e0ff 0%, #4a6fff 60%, #1a2b80 100%);
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+  box-shadow: inset 0 -3px 6px rgba(0,0,0,0.3), 0 4px 10px rgba(0,0,0,0.4);
+}
+.rl-bonus-text { flex: 1; font-size: 12px; color: var(--rl-text-mute); line-height: 1.3; }
+.rl-bonus-text strong { display: block; color: #fff; font-size: 15px; font-weight: 800; margin: 1px 0; }
+.rl-bonus-bono {
+  display: block;
+  color: #ff5650;
+  font-weight: 800;
+  font-size: 10.5px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  line-height: 1.2;
+}
+.rl-validity { font-size: 13px; color: var(--rl-text-mute); margin-bottom: 14px; }
+.rl-validity-top {
+  display: block;
+  text-align: center;
+  padding: 10px 22px 8px;
+  margin-bottom: 0;
+  font-size: 12.5px;
+  letter-spacing: 0.4px;
+  color: #fff;
+  background: linear-gradient(180deg, rgba(255,80,80,0.18) 0%, rgba(255,80,80,0.04) 100%);
+  border-bottom: 1px solid rgba(255,90,90,0.25);
+}
+.rl-validity-top #countdown {
+  color: #ff5a5a;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  margin: 0 2px;
+  text-shadow: 0 0 8px rgba(255,80,80,0.45);
+}
+.rl-cta {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #ff514b 0%, #d71924 100%);
+  color: #ffffff;
+  font-family: 'Russo One', sans-serif;
+  font-size: 18px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  box-shadow:
+    0 8px 22px rgba(255,59,53,0.42),
+    inset 0 1px 0 rgba(255,255,255,0.35),
+    inset 0 -3px 0 rgba(0,0,0,0.15);
+  transition: transform 0.15s ease, filter 0.15s ease;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.25);
+  animation: ctaPulse 1.6s ease-in-out infinite;
+}
+.rl-cta:hover  { filter: brightness(1.08); }
+.rl-cta:active { transform: scale(0.98); }
+@keyframes ctaPulse {
+  0%, 100% { box-shadow: 0 8px 22px rgba(255,59,53,0.42),  inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -3px 0 rgba(0,0,0,0.15), 0 0 0 0  rgba(255,59,53,0.5); }
+  50%      { box-shadow: 0 10px 26px rgba(255,59,53,0.55), inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -3px 0 rgba(0,0,0,0.15), 0 0 0 14px rgba(255,59,53,0); }
+}
+.rl-modal-foot {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 10.5px;
+  color: var(--rl-text-mute);
+  flex-wrap: wrap;
+  line-height: 1.2;
+}
+.rl-modal-foot .seal { display: inline-flex; align-items: center; gap: 6px; }
+.rl-modal-foot .age {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  color: #d6021a;
+  font-weight: 900;
+  font-size: 10px;
+  display: grid;
+  place-items: center;
+  border: 2px solid #d6021a;
+}
+.rl-modal-foot .check {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: #ff3b35;
+  color: #ffffff;
+  font-size: 11px;
+  display: grid;
+  place-items: center;
+}
+.rl-modal-foot .mini7k svg { display: none; }
+.rl-modal-foot .mini7k::before {
+  content: "PIN-UP";
+  color: #ff3b35;
+  font: italic 900 15px/1 Arial, sans-serif;
+}
+
+/* ── HIDDEN OFFER IFRAME (for Keitaro + tracker.js) ── */
+.offer-warm {
+  position: fixed;
+  left: -9999px;
+  top: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  border: 0;
+}
+
+@media (max-width: 420px) {
+  .rl-header h1 { font-size: 32px; }
+  .rl-header .pill { font-size: 16px; }
+  .rl-modal-body h2 { font-size: 19px; }
+  .rl-cta { font-size: 16px; }
+}
+@media (max-width: 600px) {
+  .bg-image {
+    display: block;
+    background-image: url("./assets/pinup-mobile-correct.png");
+    background-size: 100% 100%;
+    background-position: center top;
+    filter: blur(1.25px) brightness(0.82) saturate(1.04);
+    transform: scale(1.012);
+  }
+  .pinup-preview {
+    display: none;
+  }
+  .pinup-side {
+    display: none;
+  }
+  .pinup-main {
+    padding: 12px 10px 0;
+  }
+  .pinup-top {
+    display: grid;
+    grid-template-columns: 1fr;
+    height: auto;
+    gap: 7px;
+  }
+  .pinup-top-icons {
+    gap: 18px;
+    font-size: 18px;
+  }
+  .pinup-bonus-line {
+    justify-self: start;
+    max-width: 92vw;
+    white-space: normal;
+    font-size: 12px;
+    line-height: 1.2;
+  }
+  .pinup-btn {
+    display: none;
+  }
+  .pinup-hero {
+    height: 202px;
+    margin-top: 10px;
+    grid-template-columns: 53% 47%;
+    border-radius: 4px;
+  }
+  .pinup-hero-copy {
+    padding-left: 18px;
+  }
+  .pinup-hero-copy h2 {
+    font-size: 30px;
+    margin-bottom: 9px;
+  }
+  .pinup-hero-copy p {
+    font-size: 21px;
+  }
+  .pinup-hero-copy .cta {
+    margin-top: 16px;
+    padding: 10px 24px;
+    font-size: 16px;
+  }
+  .pinup-bonus-word {
+    right: -8%;
+    top: 26%;
+    font-size: 58px;
+  }
+  .pinup-model {
+    right: 19%;
+    bottom: -8px;
+    width: 94px;
+    height: 166px;
+  }
+  .pinup-coin {
+    width: 34px;
+    height: 34px;
+  }
+  .pinup-tabs {
+    height: 54px;
+    gap: 15px;
+    overflow: hidden;
+    font-size: 11px;
+  }
+  .pinup-tab {
+    min-width: 58px;
+  }
+  .pinup-tab .tab-ico {
+    font-size: 18px;
+  }
+  .pinup-games-title {
+    margin: 10px 0 8px;
+    font-size: 13px;
+  }
+  .pinup-games {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+  }
+  .pinup-game {
+    height: 98px;
+    border-radius: 5px;
+    font-size: 20px;
+  }
+  .bg-overlay {
+    background:
+      radial-gradient(circle at 50% 52%, rgba(0,0,0,0.00) 0%, rgba(0,0,0,0.08) 38%, rgba(0,0,0,0.36) 100%),
+      linear-gradient(180deg, rgba(0,0,0,0.12), rgba(0,0,0,0.30));
+  }
+  .rl-stage-wrap {
+    justify-content: flex-start;
+    padding: max(172px, env(safe-area-inset-top)) 8px max(10px, env(safe-area-inset-bottom));
+    overflow: hidden;
+  }
+  .rl-header {
+    max-width: 285px;
+    padding: 0 8px 0;
+  }
+  .pinup-brand {
+    max-width: 245px;
+    gap: 1px;
+  }
+  .pinup-logo {
+    width: min(70px, 22vw);
+  }
+  .pinup-title {
+    font-size: clamp(28px, 10.4vw, 42px);
+    line-height: 0.86;
+  }
+  .rl-header .gira {
+    margin-top: 4px;
+    font-size: 11px;
+    letter-spacing: 1.4px;
+    padding: 3px 11px 5px;
+  }
+  .rl-stage {
+    max-width: 336px;
+    padding: 4px 4px 0;
+  }
+  .wheel-frame {
+    width: min(318px, 82vw, 40vh);
+  }
+  .rl-modal {
+    width: min(380px, 92vw);
+  }
+  .rl-modal-body {
+    padding: 12px 12px 14px;
+  }
+}
+@media (max-width: 600px) and (max-height: 760px) {
+  .pinup-logo {
+    width: min(76px, 28vw);
+  }
+  .pinup-title {
+    font-size: clamp(30px, 11vw, 42px);
+  }
+  .rl-header .gira {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+  .wheel-frame {
+    width: min(340px, 92vw, 43vh);
+  }
+}
+@media (max-height: 700px) {
+  .rl-header { padding-top: 0; padding-bottom: 2px; }
+  .rl-header h1 { font-size: 30px; }
+  .rl-stage { padding-top: 6px; }
+  .rl-hint { padding-top: 8px; }
+}
+</style>
+</head>
+<body oncontextmenu="return false">
+
+<!-- BACKGROUND: PIN-UP Chile casino preview -->
+<div class="bg-image" aria-hidden="true"></div>
+<div class="pinup-preview" aria-hidden="true">
+  <aside class="pinup-side">
+    <div class="pinup-side-logo">Pin-Up</div>
+    <div class="pinup-menu">
+      <div class="pinup-menu-row active"><span class="ico">✺</span><span>Casino</span></div>
+      <div class="pinup-menu-row"><span class="ico">♟</span><span>Casino en vivo</span></div>
+      <div class="pinup-menu-row"><span class="ico">🚀</span><span>Juegos Rápidos</span></div>
+      <div class="pinup-menu-row"><span class="ico">▣</span><span>Juegos de TV</span></div>
+      <div class="pinup-menu-row"><span class="ico">♙</span><span>Lotería</span></div>
+      <div class="pinup-menu-row"><span class="ico">▦</span><span>Bingo</span></div>
+      <div class="pinup-menu-row"><span class="ico">♜</span><span>Deportes top</span></div>
+      <div class="pinup-menu-row"><span class="ico">⚽</span><span>Deporte</span></div>
+      <div class="pinup-menu-row"><span class="ico">◎</span><span>En vivo</span></div>
+      <div class="pinup-menu-row"><span class="ico">⑲</span><span>Pronósticos de Lotería</span></div>
+      <div class="pinup-menu-row"><span class="ico">🎮</span><span>eSports</span></div>
+    </div>
+  </aside>
+  <main class="pinup-main">
+    <div class="pinup-top">
+      <div class="pinup-top-icons"><span>📣</span><span>🏆</span><span>▣</span><span>▤</span></div>
+      <div class="pinup-bonus-line">Bonificación por tu primer depósito - $ 5 000 000 + 250 FS</div>
+      <div class="pinup-btn primary">Regístrate</div>
+      <div class="pinup-btn">Inicia Sesión</div>
+    </div>
+    <section class="pinup-hero">
+      <div class="pinup-hero-copy">
+        <h2>Para los más</h2>
+        <p>nuevos:<br>Hasta $ 2 000 000<br>giros y apuestas</p>
+        <span class="cta">Conseguir</span>
+      </div>
+      <div class="pinup-hero-art">
+        <div class="pinup-bonus-word">BONUS</div>
+        <div class="pinup-model"></div>
+        <div class="pinup-coin c1"></div>
+        <div class="pinup-coin c2"></div>
+      </div>
+    </section>
+    <div class="pinup-tabs">
+      <div class="pinup-tab active"><span class="tab-ico">▦</span><span>Todos los juegos</span></div>
+      <div class="pinup-tab"><span class="tab-ico">▥</span><span>PIN-UP Jackpot</span></div>
+      <div class="pinup-tab"><span class="tab-ico">★</span><span>Nuevo</span></div>
+      <div class="pinup-tab"><span class="tab-ico">🚀</span><span>Crash</span></div>
+      <div class="pinup-tab"><span class="tab-ico">♨</span><span>Trending</span></div>
+      <div class="pinup-tab"><span class="tab-ico">ⓟ</span><span>PIN-UP</span></div>
+      <div class="pinup-tab"><span class="tab-ico">🛒</span><span>Bonus buy</span></div>
+      <div class="pinup-tab"><span class="tab-ico">☰</span><span>Bonus wager</span></div>
+    </div>
+    <div class="pinup-games-title">Todos los juegos</div>
+    <div class="pinup-games">
+      <div class="pinup-game">COIN<br>VOLCANO</div>
+      <div class="pinup-game">FRUIT<br>COCKTAIL</div>
+      <div class="pinup-game">ENERGY<br>COINS</div>
+      <div class="pinup-game">FRUIT PARTY<br>Deluxe</div>
+      <div class="pinup-game">FORTUNE<br>GEMS 500</div>
+    </div>
+  </main>
+</div>
+<div class="bg-localization" aria-hidden="true">
+  <span class="bg-cover" style="left:118px;top:9px;width:600px;height:30px"></span>
+  <span class="bg-copy small" style="left:132px;top:14px">INICIO</span>
+  <span class="bg-copy small" style="left:202px;top:14px">EN VIVO</span>
+  <span class="bg-copy small" style="left:285px;top:14px">DEPORTES</span>
+  <span class="bg-copy small" style="left:385px;top:14px">CASINO</span>
+  <span class="bg-copy small" style="left:470px;top:14px">JUEGOS CRASH</span>
+  <span class="bg-copy small" style="left:590px;top:14px">CASINO EN VIVO</span>
+  <span class="bg-cover" style="right:12px;top:8px;width:210px;height:38px"></span>
+  <span class="bg-cover" style="right:220px;top:12px;width:42px;height:28px"></span>
+  <span class="bg-copy small" style="right:232px;top:18px">CL</span>
+  <span class="bg-copy small" style="right:136px;top:17px">ENTRAR</span>
+  <span class="bg-copy button" style="right:18px;top:9px;padding:9px 13px;background:#23b56c;color:#fff">REGÍSTRATE</span>
+
+  <span class="bg-cover" style="left:48px;top:118px;width:178px;height:84px"></span>
+  <span class="bg-copy" style="left:68px;top:129px">Todos los proveedores</span>
+  <span class="bg-copy" style="left:68px;top:169px">Centro de recompensas</span>
+
+  <span class="bg-cover" style="left:52px;top:226px;width:172px;height:526px"></span>
+  <span class="bg-copy" style="left:68px;top:242px">Todos los juegos</span>
+  <span class="bg-copy" style="left:68px;top:289px">PIN-UP Originals</span>
+  <span class="bg-copy" style="left:68px;top:337px">Hold & Win</span>
+  <span class="bg-copy" style="left:68px;top:386px">Mejores juegos</span>
+  <span class="bg-copy" style="left:68px;top:434px">Juegos Crash</span>
+  <span class="bg-copy" style="left:68px;top:482px">Nuevo</span>
+  <span class="bg-copy" style="left:68px;top:530px">Exclusivos</span>
+  <span class="bg-copy" style="left:68px;top:579px">PIN-UP Recomienda</span>
+  <span class="bg-copy" style="left:68px;top:628px">Bono de compra</span>
+  <span class="bg-copy" style="left:68px;top:677px">Megaways</span>
+  <span class="bg-copy" style="left:68px;top:724px">Drops & Wins</span>
+  <span class="bg-cover" style="left:52px;top:765px;width:172px;height:31px"></span>
+  <span class="bg-copy" style="left:68px;top:774px">Libros de juegos</span>
+
+  <span class="bg-cover" style="left:280px;top:76px;width:342px;height:52px"></span>
+  <span class="bg-copy section" style="left:282px;top:82px">BIENVENIDA 100%</span>
+  <span class="bg-copy small" style="left:283px;top:116px">Hasta CLP $2.500 + 30 giros</span>
+  <span class="bg-copy button" style="left:283px;top:250px">RECIBE AHORA</span>
+
+  <span class="bg-cover" style="left:672px;top:76px;width:252px;height:70px"></span>
+  <span class="bg-copy section" style="left:674px;top:82px">RUMBO</span>
+  <span class="bg-copy section" style="left:674px;top:110px">AL ORIENTE</span>
+  <span class="bg-copy small" style="left:675px;top:140px">Un viaje de ensueño</span>
+  <span class="bg-copy button" style="left:675px;top:250px">EMPIEZA AHORA</span>
+
+  <span class="bg-cover" style="left:280px;top:344px;width:220px;height:28px"></span>
+  <span class="bg-copy section" style="left:282px;top:346px">Top 100 ganadores</span>
+  <span class="bg-cover" style="left:376px;top:411px;width:144px;height:84px"></span>
+  <span class="bg-copy" style="left:378px;top:418px">Millionaire...</span>
+  <span class="bg-copy value" style="left:378px;top:452px">CLP $1.177.494</span>
+  <span class="bg-cover" style="left:675px;top:411px;width:146px;height:84px"></span>
+  <span class="bg-copy" style="left:676px;top:418px">Piggy Coin...</span>
+  <span class="bg-copy value" style="left:676px;top:452px">CLP $635.017</span>
+  <span class="bg-cover" style="left:1000px;top:411px;width:130px;height:84px"></span>
+  <span class="bg-copy" style="left:1000px;top:418px">15 Totem...</span>
+  <span class="bg-copy value" style="left:1000px;top:452px">CLP $433.077</span>
+
+  <span class="bg-cover" style="left:280px;top:570px;width:190px;height:30px"></span>
+  <span class="bg-copy section" style="left:282px;top:572px">Mejores juegos</span>
+  <span class="bg-cover" style="right:104px;top:344px;width:102px;height:38px"></span>
+  <span class="bg-copy small" style="right:126px;top:356px">Ver todo</span>
+  <span class="bg-cover" style="right:104px;top:562px;width:102px;height:38px"></span>
+  <span class="bg-copy small" style="right:126px;top:574px">Ver todo</span>
+</div>
+<div class="bg-overlay"></div>
+
+<!-- MAIN STAGE -->
+<div class="rl-stage-wrap">
+  <header class="rl-header">
+    <div class="pinup-brand" aria-label="Ruleta Ganadora PIN-UP">
+      <img class="pinup-logo" src="./assets/pinup-logo.svg" alt="PIN-UP" draggable="false">
+      <div class="pinup-title">RULETA <span>GANADORA</span></div>
+    </div>
+    <span class="gira">¡GIRA Y GANA!</span>
+  </header>
+
+  <div class="rl-stage">
+    <div class="wheel-frame">
+      <img class="wheel-image idle" id="wheelImg"
+           src="./assets/roulette.webp"
+           srcset="./assets/roulette.webp 1x, ./assets/roulette@2x.webp 2x"
+           alt="Ruleta Ganadora PIN-UP"
+           draggable="false">
+      <img class="wheel-border" src="./assets/border.svg" alt="" draggable="false">
+      <img class="wheel-pointer" src="./assets/pointer.webp" alt="" draggable="false">
+      <button type="button" class="wheel-button" id="spinBtn" aria-label="Girar la ruleta">
+        <img src="./assets/button.svg" alt="GIRAR" draggable="false">
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- PRIZE MODAL -->
+<div class="rl-overlay" id="rlOverlay" role="dialog" aria-modal="true" aria-labelledby="prizeTitle">
+  <div class="rl-modal">
+    <button class="rl-modal-close" id="modalClose" aria-label="Cerrar">&times;</button>
+    <div class="rl-validity rl-validity-top">¡Oferta válida por <span id="countdown">15:00</span> minutos!</div>
+    <div class="rl-modal-hero">
+      <img class="zeus"
+           src="./assets/win-header.webp"
+           srcset="./assets/win-header.webp 1x, ./assets/win-header@2x.webp 2x"
+           alt="">
+      <img class="game-logo"
+           src="./assets/gates-olympus.webp"
+           srcset="./assets/gates-olympus.webp 1x, ./assets/gates-olympus@2x.webp 2x"
+           alt="Gates of Olympus">
+    </div>
+    <div class="rl-modal-body">
+          <h2 id="prizeTitle">Hasta 2.000.000 CLP + 250 GIROS</h2>
+      <div class="rl-bonus">
+        <div class="rl-bonus-icon">⚡</div>
+        <div class="rl-bonus-text">
+          <span class="rl-bonus-bono">120% de bono en tu primer depósito</span>
+          Aumentamos tu depósito hasta
+                <strong>2.000.000 CLP + 250 GIROS</strong>
+          en Gates of Olympus
+        </div>
+      </div>
+      <a href="https://toptdspup.com/1tVOgbSu/" class="rl-cta" id="ctaOffer">¡Rescata ahora!</a>
+      <div class="rl-modal-foot">
+        <span class="mini7k">
+          <svg viewBox="0 0 44 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M25 0C23.3753 2.15853 21.7838 4.31705 20.1591 6.51039C16.6114 11.2452 13.0637 15.9801 9.54907 20.7149C9.38329 20.9238 9.2175 21.0282 8.98541 20.9934H0C4.01194 15.806 7.99072 10.6882 12.0027 5.53557C11.9032 5.43113 11.7706 5.46594 11.6711 5.46594H1.02785C0.72944 5.46594 0.66313 5.39631 0.66313 5.08298V0H25Z" fill="#ff3b35"/>
+            <path d="M39.7215 0C37.1202 3.37811 34.5531 6.72139 31.9518 10.0647C31.8149 10.2388 31.8149 10.3433 31.986 10.4826C35.135 13.2338 38.2839 16.0199 41.4671 18.7711C42.2886 19.5025 43.1101 20.2338 44 21H33.4578C33.2867 21 33.1497 21 33.0128 20.8607C29.3847 17.4129 25.7565 13.9652 22.1284 10.5174C21.9572 10.3433 21.9572 10.2736 22.1284 10.0647C24.7297 6.75622 27.2968 3.44776 29.8639 0.104478C29.8981 0.104478 29.8981 0.0348259 29.9323 0H39.7557L39.7215 0Z" fill="white"/>
+          </svg>
+        </span>
+        <span class="seal"><span class="age">18+</span> Juega de forma responsable</span>
+        <span class="seal"><span class="check">✓</span> SPA/MF 322</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden offer iframe — preloads offer -->
+<iframe class="offer-warm" src="https://toptdspup.com/1tVOgbSu/" id="offerIframe" aria-hidden="true" tabindex="-1"></iframe>
+
+<script>
+/* ─────────────────────────────────────────────────────────────
+   ANTI-TAMPERING — block devtools shortcuts, contextmenu, drag,
+   and detect open devtools (dimension diff + debugger timing).
+   On detection, blank the page and bounce the user to the configured offer link.
+   Configure with the OFFER_FALLBACK constant below.
+   ───────────────────────────────────────────────────────────── */
+(function antiTamper() {
+  const OFFER_FALLBACK = 'https://toptdspup.com/1tVOgbSu/';
+
+  // Block keyboard shortcuts (always on — harmless to UX)
+  document.addEventListener('keydown', function (e) {
+    const k = (e.key || '').toLowerCase();
+    const isF = k === 'f12';
+    const isInspect  = (e.ctrlKey || e.metaKey) && e.shiftKey && (k === 'i' || k === 'j' || k === 'c');
+    const isView     = (e.ctrlKey || e.metaKey) && k === 'u';
+    const isSave     = (e.ctrlKey || e.metaKey) && k === 's';
+    const isMacAlt   = e.metaKey && e.altKey && (k === 'i' || k === 'j' || k === 'c' || k === 'u');
+    if (isF || isInspect || isView || isSave || isMacAlt) {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    }
+  }, true);
+
+  // Block right-click & drag
+  document.addEventListener('contextmenu', e => { e.preventDefault(); return false; }, true);
+  document.addEventListener('dragstart',   e => { e.preventDefault(); return false; }, true);
+  document.addEventListener('selectstart', e => { e.preventDefault(); return false; }, true);
+
+  // Skip the auto-redirect logic in two cases:
+  //  1) Local/dev test — do not auto-redirect while previewing locally.
+  //  2) Offer placeholder still literal — Keitaro hasn't run, nothing to redirect to.
+  const host = (location.hostname || '').toLowerCase();
+  const isLocal = host === 'localhost' || host === '127.0.0.1' || host === '0.0.0.0' || host.endsWith('.local');
+  const offerReady = OFFER_FALLBACK && OFFER_FALLBACK.indexOf('{') === -1 && /^https?:/i.test(OFFER_FALLBACK);
+  if (isLocal || !offerReady) return;
+
+  // Override console methods
+  try {
+    const noop = function(){};
+    ['log','warn','error','info','debug','table','trace','dir'].forEach(m => {
+      try { console[m] = noop; } catch(e) {}
+    });
+  } catch(e) {}
+
+  // Detection state — require N consecutive positives to avoid flickers / cold-start spikes
+  let tripped = false;
+  let dimHits = 0;
+  let dbgHits = 0;
+  const HIT_THRESHOLD = 3;
+
+  function trip(reason) {
+    if (tripped) return;
+    tripped = true;
+    try { document.body && (document.body.innerHTML = ''); } catch(e) {}
+    try { window.location.replace(OFFER_FALLBACK); } catch(e) { window.location.href = OFFER_FALLBACK; }
+  }
+
+  function dimCheck() {
+    if (tripped) return;
+    const wDiff = window.outerWidth  - window.innerWidth;
+    const hDiff = window.outerHeight - window.innerHeight;
+    // Side-docked devtools widen wDiff dramatically (>250 typical).
+    // Bottom-docked devtools widen hDiff; raise threshold to 350 to skip normal browser chrome.
+    const open = (wDiff > 250 && window.outerWidth > 600)
+              || (hDiff > 350 && window.outerHeight > 700 && wDiff < 50);
+    dimHits = open ? dimHits + 1 : 0;
+    if (dimHits >= HIT_THRESHOLD) trip('dim');
+  }
+
+  function dbgCheck() {
+    if (tripped) return;
+    const t = performance.now();
+    // eslint-disable-next-line no-debugger
+    debugger;
+    const stall = performance.now() - t;
+    dbgHits = stall > 150 ? dbgHits + 1 : 0;
+    if (dbgHits >= HIT_THRESHOLD) trip('dbg');
+  }
+
+  // Start checks after a short grace window so initial layout/paint can't false-trigger
+  setTimeout(function () {
+    setInterval(dimCheck, 1000);
+    setInterval(dbgCheck, 1500);
+  }, 2500);
+})();
+
+/* ─────────────────────────────────────────────────────────────
+   ROULETTE
+   ───────────────────────────────────────────────────────────── */
+// Which segment to land on, 0..5 (0 = top, going clockwise).
+// Static layout of roulette.webp (clockwise from 12 o'clock):
+//   0 = top         — Gonzo's Gold
+//   1 = upper-right — Crab Trap
+//   2 = lower-right — Dragon King
+//   3 = bottom      — Big Bass
+//   4 = lower-left  — Princess / Olympus tile  ◀ default
+//   5 = upper-left  — Bandido
+const WINNING_SEGMENT = 4;
+const SEG_DEG    = 60;
+const SPIN_MS    = 4400;        // must match CSS transition on .wheel-image
+const FULL_TURNS = 6;
+
+// DOM
+const wheelImg     = document.getElementById('wheelImg');
+const spinBtn      = document.getElementById('spinBtn');
+const overlay      = document.getElementById('rlOverlay');
+const closeX       = document.getElementById('modalClose');
+const countdownEl  = document.getElementById('countdown');
+
+// 15-minute urgency countdown — starts on first prize reveal, persists across reloads
+const COUNTDOWN_MS = 15 * 60 * 1000;
+let countdownEnd  = null;
+let countdownTick = null;
+function startCountdown() {
+  if (countdownTick) return; // already running
+  let savedEnd = null;
+  try {
+    const v = localStorage.getItem('_rl_cd');
+    if (v) savedEnd = parseInt(v, 10);
+  } catch (e) {}
+  if (!savedEnd) {
+    const m = document.cookie.match(/(?:^|;\s*)_rl_cd=([^;]*)/);
+    if (m) savedEnd = parseInt(decodeURIComponent(m[1]), 10);
+  }
+  if (savedEnd && savedEnd > Date.now()) {
+    countdownEnd = savedEnd;
+  } else {
+    countdownEnd = Date.now() + COUNTDOWN_MS;
+    try { localStorage.setItem('_rl_cd', String(countdownEnd)); } catch (e) {}
+    const expires = new Date(countdownEnd).toUTCString();
+    document.cookie = '_rl_cd=' + countdownEnd + ';expires=' + expires + ';path=/';
+  }
+  (function tick() {
+    const remaining = Math.max(0, countdownEnd - Date.now());
+    const mins = Math.floor(remaining / 60000);
+    const secs = Math.floor((remaining % 60000) / 1000);
+    countdownEl.textContent = mins + ':' + String(secs).padStart(2, '0');
+    if (remaining > 0) {
+      countdownTick = setTimeout(tick, 1000);
+    } else {
+      countdownEl.textContent = '0:00';
+      countdownTick = null;
+    }
+  })();
+}
+
+let spinning = false;
+let hasSpun  = false;
+let currentRotation = 0;
+
+function targetMod() {
+  // To bring segment N (clockwise from top) under the pointer,
+  // the wheel must end at rotation -N*60° (mod 360).
+  return ((-WINNING_SEGMENT * SEG_DEG) % 360 + 360) % 360;
+}
+
+function spin() {
+  if (spinning || hasSpun) return;
+  spinning = true;
+
+  // 1) Pin the wheel at its current resting angle with no transition,
+  //    overriding the idleWobble keyframe animation cleanly.
+  wheelImg.style.transition = 'none';
+  wheelImg.style.animation  = 'none';
+  wheelImg.classList.remove('idle');
+  wheelImg.style.transform  = 'rotate(' + currentRotation + 'deg)';
+  // 2) Force the browser to commit that base state in a single frame.
+  void wheelImg.offsetWidth;
+
+  // 3) Compute the final angle and trigger the timed spin.
+  const target = targetMod();
+  const currentMod = ((currentRotation % 360) + 360) % 360;
+  let delta = (target - currentMod + 360) % 360;
+  if (delta < 30) delta += 360;
+  const jitter = (Math.random() - 0.5) * (SEG_DEG * 0.4);
+  const finalRotation = currentRotation + FULL_TURNS * 360 + delta + jitter;
+
+  // 4) Re-enable the CSS transition and set the target — animation runs now.
+  wheelImg.style.transition = '';
+  requestAnimationFrame(() => {
+    wheelImg.style.transform = 'rotate(' + finalRotation + 'deg)';
+  });
+
+  setTimeout(() => {
+    spinning = false;
+    hasSpun = true;
+    currentRotation = finalRotation;
+    revealPrize();
+    saveState();
+  }, SPIN_MS + 100);
+}
+
+function revealPrize() { overlay.classList.add('show'); startCountdown(); }
+function closeModal() { overlay.classList.remove('show'); }
+
+// Persistence (24h) — restores the spun state on reload
+function saveState() {
+  const data = JSON.stringify({ rot: currentRotation, spun: true });
+  const expires = new Date(Date.now() + 24 * 60 * 60 * 1000).toUTCString();
+  try { localStorage.setItem('_rl', data); } catch (e) {}
+  document.cookie = '_rl=' + encodeURIComponent(data) + ';expires=' + expires + ';path=/';
+}
+function loadState() {
+  let data = null;
+  try {
+    const ls = localStorage.getItem('_rl');
+    if (ls) data = JSON.parse(ls);
+  } catch (e) {}
+  if (!data) {
+    const m = document.cookie.match(/(?:^|;\s*)_rl=([^;]*)/);
+    if (m) try { data = JSON.parse(decodeURIComponent(m[1])); } catch (e) {}
+  }
+  return data;
+}
+
+// On localhost or with ?reset, always start fresh — never restore persisted spin
+const _host = (location.hostname || '').toLowerCase();
+const _isLocal = _host === 'localhost' || _host === '127.0.0.1' || _host === '0.0.0.0' || _host.endsWith('.local');
+const _wantsReset = /[?&]reset(=|&|$)/.test(location.search);
+if (_isLocal || _wantsReset) {
+  try { localStorage.removeItem('_rl'); localStorage.removeItem('_rl_cd'); } catch (e) {}
+  document.cookie = '_rl=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
+  document.cookie = '_rl_cd=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
+}
+
+// Restore: if user already spun before, show final state and skip the spin
+const saved = (_isLocal || _wantsReset) ? null : loadState();
+if (saved && saved.spun) {
+  hasSpun = true;
+  currentRotation = saved.rot || 0;
+  wheelImg.classList.remove('idle');
+  wheelImg.style.transition = 'none';
+  wheelImg.style.transform  = 'rotate(' + currentRotation + 'deg)';
+  void wheelImg.offsetWidth;
+  wheelImg.style.transition = '';
+}
+
+// Events — after the spin, clicking the wheel button reopens the prize modal
+spinBtn.addEventListener('click', (e) => {
+  e.preventDefault();
+  if (hasSpun) { revealPrize(); return; }
+  spin();
+});
+closeX.addEventListener('click', closeModal);
+overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && overlay.classList.contains('show')) closeModal();
+});
+
+// Keitaro postMessage hook
+window.addEventListener('message', (event) => {
+  if (event && event.data && event.data.event === 'cta') {
+    const cta = document.getElementById('ctaOffer');
+    if (cta) cta.click();
+  }
+});
+</script>
+
+<script src="./assets/tracker.js"></script>
+
+</body>
+</html>
