@@ -209,6 +209,7 @@ alter table public.campaigns add column if not exists creative_ids text[] defaul
 alter table public.campaigns add column if not exists page_id text;
 alter table public.campaigns add column if not exists offer_id text;
 alter table public.financial_records add column if not exists currency text not null default 'BRL';
+alter table public.financial_records add column if not exists operation_key text not null default 'igaming_chile';
 alter table public.financial_records add column if not exists ads_total numeric default 0;
 alter table public.financial_records add column if not exists opened_link integer default 0;
 alter table public.financial_records add column if not exists registrations integer default 0;
@@ -218,6 +219,9 @@ alter table public.financial_records add column if not exists withdrawals numeri
 alter table public.financial_records add column if not exists gross_revenue numeric default 0;
 alter table public.financial_records add column if not exists tools_cost numeric default 0;
 alter table public.financial_records add column if not exists total_commission numeric default 0;
+alter table public.daily_metrics add column if not exists operation_key text not null default 'igaming_chile';
+alter table public.operation_budgets add column if not exists operation_key text not null default 'igaming_chile';
+alter table public.workspace_cards add column if not exists operation_key text not null default 'igaming_chile';
 alter table public.integrations add column if not exists api_url text;
 alter table public.integrations add column if not exists affiliate_id text;
 alter table public.integrations add column if not exists subid_param text;

@@ -58,6 +58,43 @@ const nav = [
   ["Integrações", Settings],
 ] as const;
 
+type NavItem = (typeof nav)[number];
+type OperationKey = "igaming_chile" | "ryzen_growth";
+
+const operations: Record<OperationKey, { name: string; shortName: string; description: string; accent: string; icon: LucideIcon; defaultSection: string }> = {
+  igaming_chile: {
+    name: "Igaming Chile",
+    shortName: "Igaming CL",
+    description: "Operacao completa com aquisicao, criativos, SPY, paginas, relatorios e integracoes.",
+    accent: "from-amber-400 via-orange-500 to-pink-500",
+    icon: Target,
+    defaultSection: nav[0][0],
+  },
+  ryzen_growth: {
+    name: "Ryzen Growth",
+    shortName: "Ryzen",
+    description: "Operacao enxuta focada em controle financeiro e organizacao do workspace.",
+    accent: "from-cyan-400 via-blue-500 to-violet-500",
+    icon: TrendingUp,
+    defaultSection: nav[1][0],
+  },
+};
+
+const operationMenu: Record<OperationKey, readonly NavItem[]> = {
+  igaming_chile: nav,
+  ryzen_growth: [nav[1], nav[6]],
+};
+
+function isOperationKey(value: unknown): value is OperationKey {
+  return value === "igaming_chile" || value === "ryzen_growth";
+}
+
+function rowBelongsToOperation(row: Row, operation: OperationKey) {
+  const rowOperation = row.operation_key || row.operation;
+  if (!rowOperation) return operation === "igaming_chile";
+  return rowOperation === operation;
+}
+
 type SpyRow = Row & {
   name?: string;
   brand?: string;
@@ -127,6 +164,22 @@ type FinanceSummary = {
   netProfit: number;
   roi: number;
   costFtd: number;
+};
+type RyzenSale = Row & {
+  record_date?: string;
+  client_name?: string;
+  service_name?: string;
+  charged_amount?: number | string;
+  payment_status?: string;
+  notes?: string;
+};
+type RyzenSaleForm = {
+  record_date: string;
+  client_name: string;
+  service_name: string;
+  charged_amount: string;
+  payment_status: string;
+  notes: string;
 };
 type CampaignRecord = Row & {
   name?: string;
@@ -316,9 +369,65 @@ function Card({ children, className = "" }: { children: React.ReactNode; classNa
   return <div className={`glass rounded-2xl ${className}`}>{children}</div>;
 }
 
+function OperationCard({ operation, onSelect }: { operation: OperationKey; onSelect: (operation: OperationKey) => void }) {
+  const config = operations[operation];
+  const Icon = config.icon;
+  return (
+    <button
+      onClick={() => onSelect(operation)}
+      className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/[.045] p-6 text-left shadow-2xl shadow-black/20 transition hover:-translate-y-1 hover:border-white/20 focus:outline-none focus:ring-2 focus:ring-amber-300/60"
+    >
+      <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${config.accent}`} />
+      <div className="absolute -right-10 -top-10 h-36 w-36 rounded-full bg-white/[.06] blur-2xl transition group-hover:bg-white/[.09]" />
+      <div className="relative">
+        <div className={`grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br ${config.accent} text-slate-950 shadow-lg shadow-black/30`}>
+          <Icon size={24} />
+        </div>
+        <div className="mt-8">
+          <p className="text-[10px] font-bold uppercase tracking-[.28em] text-slate-500">Operacao</p>
+          <h2 className="mt-2 text-2xl font-black text-white">{config.name}</h2>
+          <p className="mt-3 max-w-sm text-sm leading-6 text-slate-400">{config.description}</p>
+        </div>
+        <div className="mt-8 flex items-center justify-between gap-3">
+          <span className="rounded-full border border-white/10 bg-black/20 px-3 py-2 text-[10px] font-bold uppercase tracking-wide text-slate-300">
+            {operationMenu[operation].length} areas
+          </span>
+          <span className="rounded-xl bg-white px-4 py-2 text-xs font-black text-slate-950 transition group-hover:bg-amber-200">Entrar</span>
+        </div>
+      </div>
+    </button>
+  );
+}
+
+function OperationSelector({ onSelect }: { onSelect: (operation: OperationKey) => void }) {
+  return (
+    <main className="noise grid min-h-screen place-items-center bg-[#070a16] px-4 py-10 text-slate-100">
+      <section className="rise w-full max-w-5xl">
+        <div className="mx-auto max-w-2xl text-center">
+          <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-2xl border border-amber-400/35 bg-amber-400/10 shadow-xl shadow-amber-950/30">
+            <img src="/elite-dashboard-logo.png" alt="Elite Dashboard" className="h-12 w-12 rounded-xl object-cover" />
+          </div>
+          <p className="text-[10px] font-bold uppercase tracking-[.32em] text-amber-300">Elite Dashboard</p>
+          <h1 className="mt-3 text-3xl font-black tracking-tight text-white md:text-5xl">Escolha a operacao</h1>
+          <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-slate-400">
+            Cada operacao tem menu, dados financeiros e workspace separados para manter o controle limpo.
+          </p>
+        </div>
+        <div className="mt-10 grid gap-5 md:grid-cols-2">
+          {(Object.keys(operations) as OperationKey[]).map((operation) => (
+            <OperationCard key={operation} operation={operation} onSelect={onSelect} />
+          ))}
+        </div>
+      </section>
+    </main>
+  );
+}
+
 export default function Home() {
   const router = useRouter();
   const [active, setActive] = useState("Visão Geral");
+  const [operation, setOperation] = useState<OperationKey | null>(null);
+  const [operationReady, setOperationReady] = useState(false);
   const [mobile, setMobile] = useState(false);
   const [search, setSearch] = useState("");
   const [spy, setSpy] = useState<SpyRow[]>([]);
@@ -328,6 +437,8 @@ export default function Home() {
   const [modal, setModal] = useState(false);
   const [authReady, setAuthReady] = useState(false);
   const [linkingData, setLinkingData] = useState(false);
+  const currentOperation = operation ? operations[operation] : null;
+  const activeNav = operation ? operationMenu[operation] : nav;
 
   useEffect(() => {
     const supabase = createSupabaseClient();
@@ -345,6 +456,19 @@ export default function Home() {
     });
     return () => subscription.unsubscribe();
   }, [router]);
+
+  useEffect(() => {
+    const savedOperation = localStorage.getItem("elite-operation");
+    if (isOperationKey(savedOperation)) setOperation(savedOperation);
+    setOperationReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!operation) return;
+    if (!operationMenu[operation].some(([item]) => item === active)) {
+      setActive(operations[operation].defaultSection);
+    }
+  }, [active, operation]);
 
   const visibleSpy = useMemo(
     () => spy.filter((item) => `${item.name || item.brand || ""}${item.platform || ""}${item.niche || ""}${item.description || item.angle || ""}`.toLowerCase().includes(search.toLowerCase())),
@@ -366,6 +490,18 @@ export default function Home() {
   const notify = (message: string) => {
     setToast(message);
     setTimeout(() => setToast(""), 2200);
+  };
+
+  const selectOperation = (nextOperation: OperationKey) => {
+    setOperation(nextOperation);
+    setActive(operations[nextOperation].defaultSection);
+    localStorage.setItem("elite-operation", nextOperation);
+  };
+
+  const changeOperation = () => {
+    setMobile(false);
+    setOperation(null);
+    localStorage.removeItem("elite-operation");
   };
 
   const exportCsv = async () => {
@@ -412,6 +548,14 @@ export default function Home() {
     return <main className="noise grid min-h-screen place-items-center bg-[#070a16] text-xs text-slate-400">Verificando acesso...</main>;
   }
 
+  if (!operationReady) {
+    return <main className="noise grid min-h-screen place-items-center bg-[#070a16] text-xs text-slate-400">Carregando operacao...</main>;
+  }
+
+  if (!operation) {
+    return <OperationSelector onSelect={selectOperation} />;
+  }
+
   return (
     <main className="noise min-h-screen bg-[#070a16] text-slate-100">
       {toast && (
@@ -452,9 +596,20 @@ export default function Home() {
           <button className="ml-auto lg:hidden" onClick={() => setMobile(false)}><X size={17} /></button>
         </div>
 
+        <div className="mx-3 mt-5 rounded-2xl border border-white/10 bg-white/[.04] p-3">
+          <p className="text-[9px] font-bold uppercase tracking-[.22em] text-slate-500">Operacao atual</p>
+          <div className="mt-2 flex items-center gap-2">
+            <div className={`h-2.5 w-2.5 rounded-full bg-gradient-to-r ${currentOperation?.accent}`} />
+            <p className="text-xs font-bold text-slate-100">{currentOperation?.name}</p>
+          </div>
+          <button onClick={changeOperation} className="mt-3 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-left text-[10px] font-bold uppercase tracking-wide text-slate-400 transition hover:border-amber-300/40 hover:text-amber-200">
+            Trocar operacao
+          </button>
+        </div>
+
         <p className="mb-3 mt-9 px-3 text-[9px] font-bold tracking-[.18em] text-slate-600">MENU PRINCIPAL</p>
         <nav className="space-y-1">
-          {nav.map(([item, Icon]) => (
+          {activeNav.map(([item, Icon]) => (
             <button
               key={item}
               onClick={() => {
@@ -500,10 +655,11 @@ export default function Home() {
             <Menu size={20} />
           </button>
           <div>
-            <p className="text-[11px] text-slate-500">Domingo, 31 de maio de 2026</p>
+            <p className="text-[11px] text-slate-500">{currentOperation?.name} · Domingo, 31 de maio de 2026</p>
             <h1 className="text-lg font-bold">{active}</h1>
           </div>
           <div className="ml-auto hidden items-center gap-2 sm:flex">
+            <button onClick={changeOperation} className="rounded-xl border border-white/[.07] bg-white/[.03] px-3 py-2 text-[10px] font-bold uppercase tracking-wide text-slate-400 transition hover:border-amber-300/40 hover:text-amber-200">Trocar operacao</button>
             <button className="grid h-10 w-10 place-items-center rounded-xl border border-white/[.07] bg-white/[.03] text-slate-400"><Bell size={16} /></button>
             <button className="grid h-10 w-10 place-items-center rounded-xl border border-white/[.07] bg-white/[.03] text-slate-400"><Settings size={16} /></button>
           </div>
@@ -511,9 +667,9 @@ export default function Home() {
 
         <div className="p-4 md:p-7">
           {active === "Visão Geral" ? (
-            <Overview exportCsv={exportCsv} />
+            <Overview operation={operation} exportCsv={exportCsv} />
           ) : active === "Financeiro" ? (
-            <Financeiro />
+            operation === "ryzen_growth" ? <RyzenFinanceiro /> : <Financeiro operation={operation} />
           ) : active === "Campanhas" ? (
             <Campanhas />
           ) : active === "Criativos" ? (
@@ -523,13 +679,13 @@ export default function Home() {
           ) : active === "Páginas" ? (
             <Paginas />
           ) : active === "Workspace" ? (
-            <Workspace />
+            <Workspace operation={operation} />
           ) : active === "Relatórios" ? (
             <Relatorios />
           ) : active === "Integrações" ? (
             <Integracoes />
           ) : (
-            <Overview exportCsv={exportCsv} />
+            <Overview operation={operation} exportCsv={exportCsv} />
           )}
         </div>
       </section>
@@ -537,7 +693,7 @@ export default function Home() {
   );
 }
 
-function Overview({ exportCsv }: { exportCsv: () => void }) {
+function Overview({ operation, exportCsv }: { operation: OperationKey; exportCsv: () => void }) {
   const [metrics, setMetrics] = useState<OverviewMetrics>(emptyOverviewMetrics);
   const [ftdGoal, setFtdGoal] = useState(50);
   const [financialRecords, setFinancialRecords] = useState<FinanceRecord[]>([]);
@@ -556,9 +712,13 @@ function Overview({ exportCsv }: { exportCsv: () => void }) {
         listRows("campaigns"),
       ]);
 
-      const budget = sumRows(budgets, "amount");
-      const revenue = sumRows(financialRows, "revenue") + sumRows(dailyMetrics, "revenue");
-      const spend = sumRows(financialRows, "spend") + sumRows(dailyMetrics, "spend");
+      const operationBudgets = budgets.filter((row) => rowBelongsToOperation(row, operation));
+      const operationFinancialRows = financialRows.filter((row) => rowBelongsToOperation(row, operation));
+      const operationDailyMetrics = dailyMetrics.filter((row) => rowBelongsToOperation(row, operation));
+
+      const budget = sumRows(operationBudgets, "amount");
+      const revenue = sumRows(operationFinancialRows, "revenue") + sumRows(operationDailyMetrics, "revenue");
+      const spend = sumRows(operationFinancialRows, "spend") + sumRows(operationDailyMetrics, "spend");
       const profit = revenue - spend;
       const roi = spend > 0 ? (profit / spend) * 100 : 0;
 
@@ -569,12 +729,12 @@ function Overview({ exportCsv }: { exportCsv: () => void }) {
           spend,
           profit,
           roi,
-          ftds: sumRows(financialRows, "ftd"),
-          leads: sumRows(dailyMetrics, "leads"),
-          registrations: sumRows(dailyMetrics, "registrations"),
+          ftds: sumRows(operationFinancialRows, "ftd"),
+          leads: sumRows(operationDailyMetrics, "leads"),
+          registrations: sumRows(operationDailyMetrics, "registrations"),
         });
-        setFinancialRecords(financialRows as FinanceRecord[]);
-        setDailyMetricRows(dailyMetrics as DailyMetric[]);
+        setFinancialRecords(operationFinancialRows as FinanceRecord[]);
+        setDailyMetricRows(operationDailyMetrics as DailyMetric[]);
         setCampaignRows(campaigns as CampaignRecord[]);
       }
     }
@@ -586,7 +746,7 @@ function Overview({ exportCsv }: { exportCsv: () => void }) {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [operation]);
   const exportBackup = async () => {
     const backup = await exportRepositoryBackup();
     const link = document.createElement("a");
@@ -978,7 +1138,255 @@ function Spy({
   );
 }
 
-function Financeiro() {
+const ryzenServices = [
+  "Criativos Starter IA",
+  "Criativos Pro IA",
+  "Landing Page Simples",
+  "Site Normal Institucional",
+  "Site 3D Premium",
+  "Loja Virtual / E-commerce",
+  "Combo Loja Virtual + Criativos Pro IA",
+  "Outro",
+] as const;
+
+const ryzenPaymentStatuses = ["Pago", "Pendente", "Parcial", "Atrasado", "Cancelado"] as const;
+const ryzenSalesStorageKey = "elite_ryzen_growth_sales";
+
+function RyzenFinanceiro() {
+  const emptyForm: RyzenSaleForm = {
+    record_date: todayInput(),
+    client_name: "",
+    service_name: ryzenServices[0],
+    charged_amount: "",
+    payment_status: "Pendente",
+    notes: "",
+  };
+  const [records, setRecords] = useState<RyzenSale[]>([]);
+  const [form, setForm] = useState<RyzenSaleForm>(emptyForm);
+  const [editingId, setEditingId] = useState("");
+  const [showForm, setShowForm] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const reload = async () => {
+    setLoading(true);
+    setMessage("");
+    try {
+      const saved = JSON.parse(localStorage.getItem(ryzenSalesStorageKey) || "[]") as RyzenSale[];
+      setRecords(Array.isArray(saved) ? saved : []);
+    } catch {
+      setRecords([]);
+      setMessage("Nao foi possivel carregar as vendas salvas neste navegador.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    reload();
+  }, []);
+
+  const activeSales = records.filter((record) => record.payment_status !== "Cancelado");
+  const totalSold = sumRows(activeSales, "charged_amount");
+  const pendingValues = sumRows(
+    records.filter((record) => ["Pendente", "Parcial", "Atrasado"].includes(String(record.payment_status))),
+    "charged_amount",
+  );
+
+  const openCreate = () => {
+    setEditingId("");
+    setForm(emptyForm);
+    setShowForm(true);
+    setMessage("");
+  };
+
+  const openEdit = (record: RyzenSale) => {
+    setEditingId(String(record.id || ""));
+    setForm({
+      record_date: String(record.record_date || todayInput()),
+      client_name: String(record.client_name || ""),
+      service_name: String(record.service_name || ryzenServices[0]),
+      charged_amount: String(record.charged_amount || ""),
+      payment_status: String(record.payment_status || "Pendente"),
+      notes: String(record.notes || ""),
+    });
+    setShowForm(true);
+    setMessage("");
+  };
+
+  const saveSale = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setSaving(true);
+    setMessage("");
+    const chargedAmount = toNumber(form.charged_amount);
+    const values: RyzenSale = {
+      operation_key: "ryzen_growth",
+      record_date: form.record_date,
+      client_name: form.client_name.trim(),
+      service_name: form.service_name,
+      charged_amount: chargedAmount,
+      payment_status: form.payment_status,
+      notes: form.notes.trim(),
+    };
+    try {
+      const nextRecords = editingId
+        ? records.map((record) => record.id === editingId ? { ...record, ...values } : record)
+        : [{ ...values, id: crypto.randomUUID(), created_at: new Date().toISOString() }, ...records];
+      localStorage.setItem(ryzenSalesStorageKey, JSON.stringify(nextRecords));
+      setRecords(nextRecords);
+      setShowForm(false);
+      setEditingId("");
+      setForm(emptyForm);
+    } catch {
+      setMessage("Nao foi possivel salvar a venda neste navegador.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const removeSale = async (record: RyzenSale) => {
+    if (!record.id || !window.confirm(`Excluir a venda de ${record.client_name || "cliente"}?`)) return;
+    try {
+      const nextRecords = records.filter((item) => item.id !== record.id);
+      localStorage.setItem(ryzenSalesStorageKey, JSON.stringify(nextRecords));
+      setRecords(nextRecords);
+    } catch {
+      setMessage("Nao foi possivel excluir a venda.");
+    }
+  };
+
+  const statusTone = (status?: string): Tone => {
+    if (status === "Pago") return "green";
+    if (status === "Atrasado" || status === "Cancelado") return "orange";
+    if (status === "Parcial") return "blue";
+    return "gold";
+  };
+
+  const summaryCards = [
+    ["Total vendido", formatCurrency(totalSold), CircleDollarSign, "from-cyan-400 to-blue-600"],
+    ["Parte total por socio", formatCurrency(totalSold / 3), Sparkles, "from-violet-500 to-pink-500"],
+    ["Valores pendentes", formatCurrency(pendingValues), Activity, "from-amber-400 to-orange-500"],
+    ["Quantidade de vendas", new Intl.NumberFormat("pt-BR").format(activeSales.length), BriefcaseBusiness, "from-emerald-400 to-teal-600"],
+  ] as const;
+
+  return (
+    <div className="rise space-y-5">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 className="text-xl font-bold">Financeiro Ryzen Growth</h2>
+          <p className="mt-1 text-xs text-slate-500">Planilha de vendas com divisao automatica entre os 3 socios.</p>
+        </div>
+        <Btn onClick={openCreate}><Plus size={15} />Adicionar nova venda</Btn>
+      </div>
+
+      {message && <Card className="border-red-400/20 p-3 text-xs text-red-200">{message}</Card>}
+
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {summaryCards.map(([label, value, Icon, color]) => (
+          <Card key={label} className="p-4">
+            <div className={`grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br ${color} text-slate-950`}><Icon size={18} /></div>
+            <p className="mt-4 text-[10px] font-bold uppercase text-slate-500">{label}</p>
+            <b className="mt-1 block text-lg">{value}</b>
+          </Card>
+        ))}
+      </div>
+
+      {showForm && (
+        <Card className="p-5">
+          <form onSubmit={saveSale} className="space-y-4">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <h3 className="text-sm font-bold">{editingId ? "Editar venda" : "Nova venda"}</h3>
+                <p className="mt-1 text-[10px] text-slate-500">A parte de cada socio sera calculada automaticamente pelo valor cobrado dividido por 3.</p>
+              </div>
+              <button type="button" onClick={() => setShowForm(false)} title="Fechar" className="rounded-lg bg-white/[.05] p-2 text-slate-400"><X size={15} /></button>
+            </div>
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+              <label className="block">
+                <span className="text-[10px] font-bold uppercase text-slate-500">Data</span>
+                <input required type="date" value={form.record_date} onChange={(event) => setForm({ ...form, record_date: event.target.value })} className="mt-1 w-full rounded-xl border border-white/10 bg-white/[.04] px-3 py-2.5 text-xs outline-none focus:border-cyan-400" />
+              </label>
+              <label className="block">
+                <span className="text-[10px] font-bold uppercase text-slate-500">Cliente</span>
+                <input required value={form.client_name} onChange={(event) => setForm({ ...form, client_name: event.target.value })} className="mt-1 w-full rounded-xl border border-white/10 bg-white/[.04] px-3 py-2.5 text-xs outline-none focus:border-cyan-400" />
+              </label>
+              <label className="block">
+                <span className="text-[10px] font-bold uppercase text-slate-500">Servico vendido</span>
+                <select value={form.service_name} onChange={(event) => setForm({ ...form, service_name: event.target.value })} className="mt-1 w-full rounded-xl border border-white/10 bg-[#11162d] px-3 py-2.5 text-xs outline-none focus:border-cyan-400">
+                  {ryzenServices.map((service) => <option key={service}>{service}</option>)}
+                </select>
+              </label>
+              <label className="block">
+                <span className="text-[10px] font-bold uppercase text-slate-500">Valor cobrado</span>
+                <input required min="0" step="0.01" type="number" value={form.charged_amount} onChange={(event) => setForm({ ...form, charged_amount: event.target.value })} className="mt-1 w-full rounded-xl border border-white/10 bg-white/[.04] px-3 py-2.5 text-xs outline-none focus:border-cyan-400" />
+              </label>
+              <label className="block">
+                <span className="text-[10px] font-bold uppercase text-slate-500">Parte de cada socio</span>
+                <div className="mt-1 rounded-xl border border-cyan-400/20 bg-cyan-400/10 px-3 py-2.5 text-xs font-bold text-cyan-200">{formatCurrency(toNumber(form.charged_amount) / 3)}</div>
+              </label>
+              <label className="block">
+                <span className="text-[10px] font-bold uppercase text-slate-500">Status do pagamento</span>
+                <select value={form.payment_status} onChange={(event) => setForm({ ...form, payment_status: event.target.value })} className="mt-1 w-full rounded-xl border border-white/10 bg-[#11162d] px-3 py-2.5 text-xs outline-none focus:border-cyan-400">
+                  {ryzenPaymentStatuses.map((status) => <option key={status}>{status}</option>)}
+                </select>
+              </label>
+              <label className="block md:col-span-2 xl:col-span-3">
+                <span className="text-[10px] font-bold uppercase text-slate-500">Observacao</span>
+                <input value={form.notes} onChange={(event) => setForm({ ...form, notes: event.target.value })} className="mt-1 w-full rounded-xl border border-white/10 bg-white/[.04] px-3 py-2.5 text-xs outline-none focus:border-cyan-400" />
+              </label>
+            </div>
+            <div className="flex justify-end gap-2">
+              <Btn secondary onClick={() => setShowForm(false)}>Cancelar</Btn>
+              <Btn type="submit">{saving ? "Salvando..." : "Salvar venda"}</Btn>
+            </div>
+          </form>
+        </Card>
+      )}
+
+      <Card className="overflow-hidden">
+        <div className="flex items-center justify-between border-b border-white/[.06] p-5">
+          <div>
+            <h3 className="text-sm font-bold">Planilha de vendas</h3>
+            <p className="mt-1 text-[10px] text-slate-500">Parte individual = valor cobrado / 3.</p>
+          </div>
+          {loading && <Badge tone="blue">Carregando</Badge>}
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[1120px] text-left text-xs">
+            <thead className="bg-white/[.025] text-[10px] uppercase text-slate-500">
+              <tr>
+                {["Data", "Cliente", "Servico vendido", "Valor cobrado", "Parte de cada socio", "Status do pagamento", "Observacao", "Acoes"].map((header) => <th key={header} className="px-4 py-3">{header}</th>)}
+              </tr>
+            </thead>
+            <tbody>
+              {records.map((record) => (
+                <tr key={String(record.id)} className="border-t border-white/[.05] transition hover:bg-white/[.025]">
+                  <td className="px-4 py-4 font-bold">{String(record.record_date || "-")}</td>
+                  <td className="px-4 font-semibold text-slate-200">{record.client_name || "-"}</td>
+                  <td className="px-4 text-slate-400">{record.service_name || "-"}</td>
+                  <td className="px-4 font-bold text-cyan-200">{formatCurrency(toNumber(record.charged_amount))}</td>
+                  <td className="px-4 font-bold text-violet-300">{formatCurrency(toNumber(record.charged_amount) / 3)}</td>
+                  <td className="px-4"><Badge tone={statusTone(record.payment_status)}>{record.payment_status || "Pendente"}</Badge></td>
+                  <td className="max-w-64 px-4 text-slate-400">{record.notes || "-"}</td>
+                  <td className="px-4">
+                    <div className="flex gap-2">
+                      <button onClick={() => openEdit(record)} title="Editar venda" className="rounded-lg bg-white/[.05] p-2 text-slate-400 transition hover:text-cyan-200"><Pencil size={14} /></button>
+                      <button onClick={() => removeSale(record)} title="Excluir venda" className="rounded-lg bg-red-500/10 p-2 text-red-300 transition hover:bg-red-500/20"><Trash2 size={14} /></button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {!records.length && !loading && <tr><td colSpan={8} className="px-5 py-12 text-center text-slate-500">Nenhuma venda cadastrada na Ryzen Growth.</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+function Financeiro({ operation }: { operation: OperationKey }) {
   const emptyForm: FinanceForm = {
     record_date: todayInput(),
     ads_total: "",
@@ -1004,7 +1412,8 @@ function Financeiro() {
   const reload = async () => {
     setLoading(true);
     try {
-      setRecords((await listRows("financial_records")) as FinanceRecord[]);
+      const rows = await listRows("financial_records");
+      setRecords(rows.filter((row) => rowBelongsToOperation(row, operation)) as FinanceRecord[]);
     } finally {
       setLoading(false);
     }
@@ -1012,7 +1421,7 @@ function Financeiro() {
 
   useEffect(() => {
     reload();
-  }, []);
+  }, [operation]);
 
   const period = useMemo(() => {
     const today = todayInput();
@@ -1122,6 +1531,7 @@ function Financeiro() {
         revenue: toNumber(form.gross_revenue),
         notes: form.notes,
         currency: "BRL",
+        operation_key: operation,
       };
       await createRow("financial_records", values);
       setForm(emptyForm);
@@ -2009,7 +2419,7 @@ function Paginas() {
   );
 }
 
-function Workspace() {
+function Workspace({ operation }: { operation: OperationKey }) {
   const columns = ["Ideias", "A Fazer", "Em Produção", "Em Teste", "Concluído"];
   const emptyForm: WorkspaceForm = { title: "", description: "", priority: "Média", status: "Ideias" };
   const [records, setRecords] = useState<WorkspaceCard[]>([]);
@@ -2022,7 +2432,8 @@ function Workspace() {
   const reload = async () => {
     setLoading(true);
     try {
-      setRecords((await listRows("workspace_cards")) as WorkspaceCard[]);
+      const rows = await listRows("workspace_cards");
+      setRecords(rows.filter((row) => rowBelongsToOperation(row, operation)) as WorkspaceCard[]);
     } finally {
       setLoading(false);
     }
@@ -2030,7 +2441,7 @@ function Workspace() {
 
   useEffect(() => {
     reload();
-  }, []);
+  }, [operation]);
 
   const openCreate = () => {
     setEditingId("");
@@ -2058,6 +2469,7 @@ function Workspace() {
         description: form.description,
         priority: form.priority,
         status: form.status,
+        operation_key: operation,
       };
       if (editingId) await updateRow("workspace_cards", editingId, values);
       else await createRow("workspace_cards", values);
